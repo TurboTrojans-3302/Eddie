@@ -12,6 +12,9 @@
 
 package frc.robot.subsystems;
 
+import java.io.Console;
+
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
@@ -31,9 +34,9 @@ import frc.robot.commands.TeleOPDrive;
  *
  */
 public class Drivetrain extends SubsystemBase {
-    private static final double TRACKWIDTH = 19.5;
-    private static final double WHEELBASE = 23.5;
-    private static final double MAX_SPEED = 1.5; // m/s
+    private static final double TRACKWIDTH = 19.5; //distance between the left and right wheels
+    private static final double WHEELBASE = 23.5; //front to back distance
+    private static final double MAX_SPEED = 1.5; // m/s 
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
@@ -103,7 +106,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
 
         SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
-
+        //System.out.println("front right angle: " + Math.toDegrees(frontRightModule.getSteerAngle()));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
@@ -123,10 +126,28 @@ public class Drivetrain extends SubsystemBase {
         backRightModule.set(states[3].speedMetersPerSecond/MAX_SPEED, states[3].angle.getRadians());
         //TODO we'd really like to set the velocity in m/s
     }
+    
+    public void setAll(double speed, double angleRadians) {
+        frontLeftModule.set(speed, angleRadians);
+        frontRightModule.set(speed, angleRadians);
+        backLeftModule.set(speed, angleRadians);
+        backRightModule.set(speed, angleRadians);
+    }
 
+
+    public void setAllSpeed(double speed){
+        frontLeftModule.set(speed, frontLeftModule.getSteerAngle());
+        frontRightModule.set(speed, frontRightModule.getSteerAngle());
+        backLeftModule.set(speed, backLeftModule.getSteerAngle());
+        backRightModule.set(speed, backRightModule.getSteerAngle());
+    }
     public void resetGyroscope() {
         ahrs.setAngleAdjustment(ahrs.getAngle() - ahrs.getAngleAdjustment());
     }
 
+    public double getPitch() {
+       return ahrs.getPitch();
+    }
 }
 
+//TODO Create a stop method for the drivetrain
