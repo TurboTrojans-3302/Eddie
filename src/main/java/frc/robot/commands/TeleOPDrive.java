@@ -11,6 +11,7 @@
 // ROBOTBUILDER TYPE: Command.
 
 package frc.robot.commands;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -63,7 +64,7 @@ public class TeleOPDrive extends CommandBase {
         double turn = driveController.getRightX();
 
         //Format data to send to the drivetrain
-        Translation2d translation = new Translation2d(x, y);
+        Translation2d translation = new Translation2d(x, y).rotateBy(Rotation2d.fromDegrees(90));
         double rotation = turn * Math.PI;
 
         //Send it to the drivetrain

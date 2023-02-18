@@ -17,6 +17,8 @@ import java.io.Console;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -38,35 +40,56 @@ public class Drivetrain extends SubsystemBase {
     private static final double WHEELBASE = 23.5; //front to back distance
     private static final double MAX_SPEED = 1.5; // m/s 
 
-    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
-    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    // private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(29.0);
+    // private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(149.6);
+    // private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(124.0);
+    // private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(341.0);
+
+    private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
+    private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(124.4);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(341.6);
 
     private static Drivetrain instance;
 
-    private final SwerveModule frontLeftModule = Mk4SwerveModuleHelper.createNeo(
-                                                        GearRatio.L2,
+    ModuleConfiguration rightSideConfiguration = new ModuleConfiguration(
+        0.10033,
+        (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+        true,
+        //(15.0 / 32.0) * (10.0 / 60.0),
+        (9.0 / 24.0) * (14.0 / 72.0),
+        true );
+
+        ModuleConfiguration leftSideConfiguration = new ModuleConfiguration(
+            0.10033,
+            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            false,
+            //(15.0 / 32.0) * (10.0 / 60.0),
+            (9.0 / 24.0) * (14.0 / 72.0),
+            true );
+    
+        private final TTSwerveModule frontLeftModule = new TTSwerveModule(
+                                                        leftSideConfiguration,
                                                         RobotMap.DRIVETRAIN_FRONT_LEFT_DRIVE_MOTOR,
                                                         RobotMap.DRIVETRAIN_FRONT_LEFT_ANGLE_MOTOR,
                                                         RobotMap.DRIVETRAIN_FRONT_LEFT_ANGLE_ENCODER,
                                                         FRONT_LEFT_ANGLE_OFFSET );
-    private final SwerveModule frontRightModule = Mk4SwerveModuleHelper.createNeo(
-                                                        GearRatio.L2,
+    private final TTSwerveModule frontRightModule = new TTSwerveModule(
+                                                        rightSideConfiguration,
                                                         RobotMap.DRIVETRAIN_FRONT_RIGHT_DRIVE_MOTOR,
                                                         RobotMap.DRIVETRAIN_FRONT_RIGHT_ANGLE_MOTOR,
                                                         RobotMap.DRIVETRAIN_FRONT_RIGHT_ANGLE_ENCODER,
                                                         FRONT_RIGHT_ANGLE_OFFSET );
 
-    private final SwerveModule backLeftModule = Mk4SwerveModuleHelper.createNeo(
-                                                        GearRatio.L2,
+    private final TTSwerveModule backLeftModule  = new TTSwerveModule(
+                                                        leftSideConfiguration,
                                                         RobotMap.DRIVETRAIN_BACK_LEFT_DRIVE_MOTOR,
                                                         RobotMap.DRIVETRAIN_BACK_LEFT_ANGLE_MOTOR,
                                                         RobotMap.DRIVETRAIN_BACK_LEFT_ANGLE_ENCODER,
                                                         BACK_LEFT_ANGLE_OFFSET );
 
-    private final SwerveModule backRightModule = Mk4SwerveModuleHelper.createNeo(
-                                                        GearRatio.L2,
+    private final TTSwerveModule backRightModule =  new TTSwerveModule(
+                                                        rightSideConfiguration,
                                                         RobotMap.DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR,
                                                         RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR,
                                                         RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER,
@@ -104,12 +127,16 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
-
+        SmartDashboard.putNumber("Back Right Module Absolute Angle", Math.toDegrees(backRightModule.getAbsoluteAngle()));
+        SmartDashboard.putNumber("Back left Module Absolute Angle", Math.toDegrees(backLeftModule.getAbsoluteAngle()));
+        SmartDashboard.putNumber("front left Module Absolute Angle", Math.toDegrees(frontLeftModule.getAbsoluteAngle()));
+        SmartDashboard.putNumber("front Right Module Absolute Angle", Math.toDegrees(frontRightModule.getAbsoluteAngle()));
         SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
         //System.out.println("front right angle: " + Math.toDegrees(frontRightModule.getSteerAngle()));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
+
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
         ChassisSpeeds speeds;
         if (fieldOriented) {
@@ -119,12 +146,18 @@ public class Drivetrain extends SubsystemBase {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
 
+
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         frontLeftModule.set(states[0].speedMetersPerSecond/MAX_SPEED, states[0].angle.getRadians());
         frontRightModule.set(states[1].speedMetersPerSecond/MAX_SPEED, states[1].angle.getRadians());
         backLeftModule.set(states[2].speedMetersPerSecond/MAX_SPEED, states[2].angle.getRadians());
         backRightModule.set(states[3].speedMetersPerSecond/MAX_SPEED, states[3].angle.getRadians());
         //TODO we'd really like to set the velocity in m/s
+
+        SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());
+        SmartDashboard.putNumber("Front Right Commanded Angle", states[1].angle.getDegrees());
+        SmartDashboard.putNumber("Back Left Commanded Angle", states[2].angle.getDegrees());
+        SmartDashboard.putNumber("Back Right Commanded Angle", states[3].angle.getDegrees());
     }
     
     public void setAll(double speed, double angleRadians) {
@@ -132,21 +165,26 @@ public class Drivetrain extends SubsystemBase {
         frontRightModule.set(speed, angleRadians);
         backLeftModule.set(speed, angleRadians);
         backRightModule.set(speed, angleRadians);
+        SmartDashboard.putNumber("Front Left Commanded Angle", Math.toDegrees(angleRadians));
+        SmartDashboard.putNumber("Front Right Commanded Angle", Math.toDegrees(angleRadians));
+        SmartDashboard.putNumber("Back Left Commanded Angle", Math.toDegrees(angleRadians));
+        SmartDashboard.putNumber("Back Right Commanded Angle", Math.toDegrees(angleRadians));
     }
 
 
-    public void setAllSpeed(double speed){
-        frontLeftModule.set(speed, frontLeftModule.getSteerAngle());
-        frontRightModule.set(speed, frontRightModule.getSteerAngle());
-        backLeftModule.set(speed, backLeftModule.getSteerAngle());
-        backRightModule.set(speed, backRightModule.getSteerAngle());
-    }
     public void resetGyroscope() {
         ahrs.setAngleAdjustment(ahrs.getAngle() - ahrs.getAngleAdjustment());
     }
 
     public double getPitch() {
        return ahrs.getPitch();
+    }
+
+    public void calibrateSterrRelativeEncoder(){
+        frontLeftModule.calibrateSterrRelativeEncoder();
+        frontRightModule.calibrateSterrRelativeEncoder();
+        backLeftModule.calibrateSterrRelativeEncoder();
+        backRightModule.calibrateSterrRelativeEncoder();
     }
 }
 

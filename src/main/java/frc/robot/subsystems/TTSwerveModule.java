@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
-import com.swervedrivespecialties.swervelib.AbsoluteEncoderFactory;
 import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SteerController;
 import com.swervedrivespecialties.swervelib.SwerveModule;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 import com.swervedrivespecialties.swervelib.rev.NeoSteerConfiguration;
 import com.swervedrivespecialties.swervelib.ctre.CanCoderAbsoluteConfiguration;
 import com.swervedrivespecialties.swervelib.ctre.CtreUtils;
@@ -21,12 +19,12 @@ import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
 
 public class TTSwerveModule implements SwerveModule {
 
-    private SteerController mSteerController;
-    private DriveController mDriveController;
+    private SteerControllerImplementation mSteerController;
+    private DriveControllerImplementation mDriveController;
     private Mk4ModuleConfiguration mModuleConfiguration;
 
     public TTSwerveModule(
-        GearRatio gearRatio,
+        ModuleConfiguration mechanicalConfiguration,
         int driveMotorPort,
         int steerMotorPort,
         int steerEncoderPort,
@@ -40,7 +38,6 @@ public class TTSwerveModule implements SwerveModule {
         double currentLimit = mModuleConfiguration.getDriveCurrentLimit();
     
         CANSparkMax driveMotor = new CANSparkMax(driveMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
-        ModuleConfiguration mechanicalConfiguration = gearRatio.getConfiguration();
         driveMotor.setInverted(mechanicalConfiguration.isDriveInverted());
     
         checkNeoError(driveMotor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
@@ -78,6 +75,7 @@ public class TTSwerveModule implements SwerveModule {
         CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 250), "Failed to configure CANCoder update rate");
 
         EncoderImplementation absoluteEncoder = new EncoderImplementation(encoder);
+        absoluteEncoder.setInverted(true);
 
         //AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> encoderFactory = new CanCoderFactoryBuilder().withReadingUpdatePeriod(100).build();
         //AbsoluteEncoder absoluteEncoder = encoderFactory.create(encoderconfig);
@@ -108,10 +106,14 @@ public class TTSwerveModule implements SwerveModule {
         checkNeoError(controller.setFeedbackDevice(integratedEncoder), "Failed to set NEO PID feedback device");
 
         mSteerController = new SteerControllerImplementation(steerMotor, absoluteEncoder);
-
     }            
 
-    
+    public void calibrateSterrRelativeEncoder(){
+
+        mSteerController.calibrateRelativeEncoder();
+
+    }
+
     private static class DriveControllerImplementation implements DriveController {
         private final CANSparkMax motor;
         private final RelativeEncoder encoder;
@@ -145,8 +147,6 @@ public class TTSwerveModule implements SwerveModule {
 
         private double referenceAngleRadians = 0;
 
-        private double resetIteration = 0;
-
         public SteerControllerImplementation(CANSparkMax motor, EncoderImplementation absoluteEncoder) {
             this.motor = motor;
             this.controller = motor.getPIDController();
@@ -158,6 +158,15 @@ public class TTSwerveModule implements SwerveModule {
         public double getReferenceAngle() {
             return referenceAngleRadians;
         }
+        
+        public void calibrateRelativeEncoder(){
+            double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            motorEncoder.setPosition(absoluteAngle);
+            //setReferenceAngle(absoluteAngle);
+        }
+
+
+
 
         @Override
         public void setReferenceAngle(double referenceAngleRadians) {
@@ -166,16 +175,16 @@ public class TTSwerveModule implements SwerveModule {
             // Reset the NEO's encoder periodically when the module is not rotating.
             // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
             // end up getting a good reading. If we reset periodically this won't matter anymore.
-            if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-                if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-                    resetIteration = 0;
-                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                    motorEncoder.setPosition(absoluteAngle);
-                    currentAngleRadians = absoluteAngle;
-                }
-            } else {
-                resetIteration = 0;
-            }
+            // if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+            //     if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+            //         resetIteration = 0;
+            //         double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            //         motorEncoder.setPosition(absoluteAngle);
+            //         currentAngleRadians = absoluteAngle;
+            //     }
+            // } else {
+            //     resetIteration = 0;
+            // }
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
             if (currentAngleRadiansMod < 0.0) {
@@ -195,6 +204,8 @@ public class TTSwerveModule implements SwerveModule {
             controller.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
         }
 
+
+
         @Override
         public double getStateAngle() {
             double motorAngleRadians = motorEncoder.getPosition();
@@ -204,6 +215,10 @@ public class TTSwerveModule implements SwerveModule {
             }
 
             return motorAngleRadians;
+        }
+
+        public double getAbsoluteAngle(){
+            return absoluteEncoder.getAbsoluteAngle();
         }
     }
 
@@ -349,4 +364,8 @@ public class TTSwerveModule implements SwerveModule {
         mDriveController.setReferenceVoltage(driveVoltage);
         mSteerController.setReferenceAngle(steerAngle);
     }    
+
+    public double getAbsoluteAngle(){
+        return mSteerController.getAbsoluteAngle();
+    }
 }
