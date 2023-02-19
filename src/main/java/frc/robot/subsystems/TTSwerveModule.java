@@ -136,8 +136,6 @@ public class TTSwerveModule implements SwerveModule {
     
     
     public static class SteerControllerImplementation implements SteerController {
-        private static final int ENCODER_RESET_ITERATIONS = 500;
-        private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
         @SuppressWarnings({"FieldCanBeLocal", "unused"})
         private final CANSparkMax motor;
@@ -162,7 +160,6 @@ public class TTSwerveModule implements SwerveModule {
         public void calibrateRelativeEncoder(){
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             motorEncoder.setPosition(absoluteAngle);
-            //setReferenceAngle(absoluteAngle);
         }
 
 
@@ -171,20 +168,6 @@ public class TTSwerveModule implements SwerveModule {
         @Override
         public void setReferenceAngle(double referenceAngleRadians) {
             double currentAngleRadians = motorEncoder.getPosition();
-
-            // Reset the NEO's encoder periodically when the module is not rotating.
-            // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
-            // end up getting a good reading. If we reset periodically this won't matter anymore.
-            // if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-            //     if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-            //         resetIteration = 0;
-            //         double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-            //         motorEncoder.setPosition(absoluteAngle);
-            //         currentAngleRadians = absoluteAngle;
-            //     }
-            // } else {
-            //     resetIteration = 0;
-            // }
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
             if (currentAngleRadiansMod < 0.0) {
@@ -284,8 +267,7 @@ public class TTSwerveModule implements SwerveModule {
 
         @Override
         public boolean getInverted() {
-            // TODO Auto-generated method stub
-            return false;
+            return encoder.configGetSensorDirection();
         }
 
         @Override
@@ -302,14 +284,12 @@ public class TTSwerveModule implements SwerveModule {
 
         @Override
         public REVLibError setZeroOffset(double offset) {
-            // TODO Auto-generated method stub
-            return REVLibError.kNotImplemented;
+            return ErrorCode.OK == encoder.configMagnetOffset(offset) ? REVLibError.kOk : REVLibError.kError;
         }
 
         @Override
         public double getZeroOffset() {
-            // TODO Auto-generated method stub
-            return 0;
+            return encoder.configGetMagnetOffset();
         }
     }
 

@@ -12,16 +12,8 @@
 
 package frc.robot.subsystems;
 
-import java.io.Console;
-
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.kauailabs.navx.frc.AHRS;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
-import com.swervedrivespecialties.swervelib.SwerveModule;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,11 +32,6 @@ public class Drivetrain extends SubsystemBase {
     private static final double WHEELBASE = 23.5; //front to back distance
     private static final double MAX_SPEED = 1.5; // m/s 
 
-    // private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(29.0);
-    // private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(149.6);
-    // private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(124.0);
-    // private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(341.0);
-
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
     private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(124.4);
@@ -56,17 +43,15 @@ public class Drivetrain extends SubsystemBase {
         0.10033,
         (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
         true,
-        //(15.0 / 32.0) * (10.0 / 60.0),
         (9.0 / 24.0) * (14.0 / 72.0),
         true );
 
-        ModuleConfiguration leftSideConfiguration = new ModuleConfiguration(
-            0.10033,
-            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
-            false,
-            //(15.0 / 32.0) * (10.0 / 60.0),
-            (9.0 / 24.0) * (14.0 / 72.0),
-            true );
+    ModuleConfiguration leftSideConfiguration = new ModuleConfiguration(
+        0.10033,
+        (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+        false,
+        (9.0 / 24.0) * (14.0 / 72.0),
+        true );
     
         private final TTSwerveModule frontLeftModule = new TTSwerveModule(
                                                         leftSideConfiguration,
