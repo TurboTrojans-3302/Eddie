@@ -12,6 +12,7 @@
 
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.core.TreeNode;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,9 +29,9 @@ import frc.robot.commands.TeleOPDrive;
  *
  */
 public class Drivetrain extends SubsystemBase {
-    private static final double TRACKWIDTH = 19.5; //distance between the left and right wheels
-    private static final double WHEELBASE = 23.5; //front to back distance
-    private static final double MAX_SPEED = 1.5; // m/s 
+    private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
+    private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
+    private static final double MAX_SPEED = 3.0; // m/s 
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
@@ -81,12 +82,11 @@ public class Drivetrain extends SubsystemBase {
                                                         BACK_RIGHT_ANGLE_OFFSET );
                         
                         
-
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            new Translation2d(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
-            new Translation2d(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)
+            new Translation2d(-WHEELBASE / 2.0, TRACKWIDTH / 2.0),  //front left
+            new Translation2d(-WHEELBASE / 2.0, -TRACKWIDTH / 2.0), //front right
+            new Translation2d(WHEELBASE / 2.0, TRACKWIDTH / 2.0), //back  left
+            new Translation2d(WHEELBASE / 2.0, -TRACKWIDTH / 2.0) //back  right
     );
 
     private final AHRS ahrs = new AHRS();
@@ -117,11 +117,11 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("front left Module Absolute Angle", Math.toDegrees(frontLeftModule.getAbsoluteAngle()));
         SmartDashboard.putNumber("front Right Module Absolute Angle", Math.toDegrees(frontRightModule.getAbsoluteAngle()));
         SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
-        //System.out.println("front right angle: " + Math.toDegrees(frontRightModule.getSteerAngle()));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
+        translation = translation.times(MAX_SPEED);
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
         ChassisSpeeds speeds;
         if (fieldOriented) {
@@ -133,10 +133,10 @@ public class Drivetrain extends SubsystemBase {
 
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
-        frontLeftModule.set(states[0].speedMetersPerSecond/MAX_SPEED, states[0].angle.getRadians());
-        frontRightModule.set(states[1].speedMetersPerSecond/MAX_SPEED, states[1].angle.getRadians());
-        backLeftModule.set(states[2].speedMetersPerSecond/MAX_SPEED, states[2].angle.getRadians());
-        backRightModule.set(states[3].speedMetersPerSecond/MAX_SPEED, states[3].angle.getRadians());
+        frontLeftModule.set(states[0].speedMetersPerSecond, states[0].angle.getRadians());
+        frontRightModule.set(states[1].speedMetersPerSecond, states[1].angle.getRadians());
+        backLeftModule.set(states[2].speedMetersPerSecond, states[2].angle.getRadians());
+        backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
         //TODO we'd really like to set the velocity in m/s
 
         SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());

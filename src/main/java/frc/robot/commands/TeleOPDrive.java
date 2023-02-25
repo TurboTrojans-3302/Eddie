@@ -59,12 +59,12 @@ public class TeleOPDrive extends CommandBase {
     public void execute() {
         //Figure out what the controller value is
         XboxController driveController = RobotContainer.getInstance().getDriveController();
-        double x = driveController.getLeftX();
-        double y = driveController.getLeftY();
-        double turn = driveController.getRightX();
+        double forward = -driveController.getLeftY();
+        double leftward = driveController.getLeftX();
+        double turn = -driveController.getRightX();
 
         //Format data to send to the drivetrain
-        Translation2d translation = new Translation2d(x, y).rotateBy(Rotation2d.fromDegrees(90));
+        Translation2d translation = new Translation2d(forward, leftward);
         double rotation = turn * Math.PI;
 
         //Send it to the drivetrain
