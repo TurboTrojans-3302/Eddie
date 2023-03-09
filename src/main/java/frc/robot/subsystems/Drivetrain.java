@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -31,7 +32,7 @@ import frc.robot.commands.TeleOPDrive;
 public class Drivetrain extends SubsystemBase {
     private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
-    private static final double MAX_SPEED = 3.0; // m/s 
+    private static final double MAX_SPEED = 4.0; // m/s 
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
@@ -80,7 +81,7 @@ public class Drivetrain extends SubsystemBase {
                                                         RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR,
                                                         RobotMap.DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER,
                                                         BACK_RIGHT_ANGLE_OFFSET );
-                        
+                         
                         
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
             new Translation2d(-WHEELBASE / 2.0, TRACKWIDTH / 2.0),  //front left
@@ -89,8 +90,8 @@ public class Drivetrain extends SubsystemBase {
             new Translation2d(WHEELBASE / 2.0, -TRACKWIDTH / 2.0) //back  right
     );
 
-    private final AHRS ahrs = new AHRS();
-
+    private final AHRS ahrs = new AHRS(SerialPort.Port.kUSB);
+ 
     public Drivetrain() {
         ahrs.calibrate();
 
@@ -112,11 +113,9 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
-        SmartDashboard.putNumber("Back Right Module Absolute Angle", Math.toDegrees(backRightModule.getAbsoluteAngle()));
-        SmartDashboard.putNumber("Back left Module Absolute Angle", Math.toDegrees(backLeftModule.getAbsoluteAngle()));
-        SmartDashboard.putNumber("front left Module Absolute Angle", Math.toDegrees(frontLeftModule.getAbsoluteAngle()));
-        SmartDashboard.putNumber("front Right Module Absolute Angle", Math.toDegrees(frontRightModule.getAbsoluteAngle()));
+
         SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
+        SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
