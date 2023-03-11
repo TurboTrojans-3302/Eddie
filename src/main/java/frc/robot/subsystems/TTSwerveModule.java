@@ -6,6 +6,10 @@ import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SteerController;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import com.swervedrivespecialties.swervelib.rev.NeoSteerConfiguration;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+
 import com.swervedrivespecialties.swervelib.ctre.CanCoderAbsoluteConfiguration;
 import com.swervedrivespecialties.swervelib.ctre.CtreUtils;
 import com.revrobotics.*;
@@ -15,6 +19,8 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
+
+import org.opencv.features2d.MSER;
 
 
 public class TTSwerveModule implements SwerveModule {
@@ -347,5 +353,11 @@ public class TTSwerveModule implements SwerveModule {
 
     public double getAbsoluteAngle(){
         return mSteerController.getAbsoluteAngle();
+    }
+
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+            mDriveController.encoder.getPosition(),
+            new Rotation2d(mSteerController.absoluteEncoder.getPosition()));
     }
 }

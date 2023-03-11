@@ -12,13 +12,16 @@
 
 package frc.robot.subsystems;
 
-import com.fasterxml.jackson.core.TreeNode;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +34,9 @@ import frc.robot.commands.TeleOPDrive;
  *
  */
 public class Drivetrain extends SubsystemBase {
+   
+    private static final double startingPositionY = 13.5;
+    private static final double startingPositionX = 5.0;
     private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
     private static final double MAX_SPEED = 4.0; // m/s 
@@ -39,8 +45,12 @@ public class Drivetrain extends SubsystemBase {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
     private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(124.4);
     private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(341.6);
+    private static final double kPgain = 0.040;
+    private static final double kDgain = 0;
 
     private static Drivetrain instance;
+
+    private SwerveDriveOdometry mOdometry;
 
     ModuleConfiguration rightSideConfiguration = new ModuleConfiguration(
         0.10033,
@@ -92,11 +102,21 @@ public class Drivetrain extends SubsystemBase {
     );
 
     private final AHRS ahrs = new AHRS(SerialPort.Port.kUSB);
+    private Pose2d m_pose;
  
     public Drivetrain() {
         ahrs.calibrate();
 
         setDefaultCommand(new TeleOPDrive(this, RobotContainer.getInstance().m_arm));
+
+        mOdometry = new SwerveDriveOdometry(
+            kinematics, Rotation2d.fromDegrees(getAngle()),
+            new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              backLeftModule.getPosition(),
+              backRightModule.getPosition()
+            }, new Pose2d(startingPositionX, startingPositionY, new Rotation2d()));
     }
 
     public static Drivetrain getInstance() {
@@ -109,6 +129,16 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Get the rotation of the robot from the gyro.
+        var gyroAngle = Rotation2d.fromDegrees(getAngle());
+
+         // Update the pose
+         m_pose = mOdometry.update(gyroAngle,
+                        new SwerveModulePosition[] {
+                        frontLeftModule.getPosition(), frontRightModule.getPosition(),
+                        backLeftModule.getPosition(), backRightModule.getPosition()
+                        });
+
 
         SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
@@ -117,7 +147,25 @@ public class Drivetrain extends SubsystemBase {
 
         SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
         SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
+
+        SmartDashboard.putString("Pose:", m_pose.toString());
+
     }
+
+    public Pose2d getPose2d(){
+        return m_pose;
+    }
+
+    public void driveHeading(Translation2d translation, double heading) {
+
+        double angle = getAngle();
+		double currentAngularRate = getAngularRate();
+		double angle_error = angleDelta(heading, angle);
+		double yawCommand = - angle_error * kPgain - (currentAngularRate) * kDgain;
+
+        drive(translation, yawCommand, true);
+    }
+
 
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
@@ -165,11 +213,30 @@ public class Drivetrain extends SubsystemBase {
        return ahrs.getPitch();
     }
 
+    public double getAngle() {
+        return -ahrs.getAngle();
+    }
+
+    public double getAngularRate() {
+        return -ahrs.getRate();
+    }
+
+    static public double angleDelta(double src, double dest) {
+		double delta = (dest - src) % 360.0;
+		if(Math.abs(delta) > 180) {
+			delta = delta - (Math.signum(delta) * 360);
+		}
+		return delta;
+    }
+    
     public void calibrateSterrRelativeEncoder(){
         frontLeftModule.calibrateSterrRelativeEncoder();
         frontRightModule.calibrateSterrRelativeEncoder();
         backLeftModule.calibrateSterrRelativeEncoder();
         backRightModule.calibrateSterrRelativeEncoder();
+    }
+
+    public void stop() {
     }
 }
 

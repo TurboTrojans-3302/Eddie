@@ -4,29 +4,59 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drivetrain;
+
 
 public class BalanceOnTheChargingStation extends CommandBase {
+
+  private static final double DRIVE_SPEED = 0.2;
+  private static final double PITCH_TOLERANCE = 5.0;
+  private static final double TIME_LIMIT = 1.0;
+  private Drivetrain m_drivetrain;
+  private Timer m_timer;
+
   /** Creates a new BalanceOnTheChargingStation. */
-  public BalanceOnTheChargingStation() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public BalanceOnTheChargingStation(Drivetrain subsystem) {
+    m_drivetrain = subsystem;
+    addRequirements(m_drivetrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_timer.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    System.out.println("pitch is: " + m_drivetrain.getPitch());
+    if (m_drivetrain.getPitch() > PITCH_TOLERANCE){
+      m_drivetrain.drive(new Translation2d(DRIVE_SPEED, 0), 0, false);
+      m_timer.reset();
+    }
+    else if (m_drivetrain.getPitch() < -PITCH_TOLERANCE){
+      m_drivetrain.drive(new Translation2d(-0.2, 0), 0, false);
+      m_timer.reset();
+    }
+    else {
+      m_drivetrain.stop();
+    }
+  }
+
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_drivetrain.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_timer.get() > TIME_LIMIT;
   }
 }

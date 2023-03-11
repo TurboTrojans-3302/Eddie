@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.MathUtil;
 import frc.robot.RobotMap;
 
 
@@ -66,12 +67,13 @@ public class Arm extends SubsystemBase {
         shoulderValve.set(Value.kReverse);
         extensionValve.set(Value.kReverse);
         gripperValve.set(Value.kForward);
-        .get
+
         elbowMotor = new CANSparkMax(RobotMap.ELBOW_MOTOR_ID, MotorType.kBrushless);
         wristMotor = new CANSparkMax(RobotMap.WRIST_MOTOR_ID, MotorType.kBrushless);
 
         wristEncoder = wristMotor.getEncoder();
         elbowEncoder = elbowMotor.getEncoder();
+        
     }
 
    public final double elbowDegreesPerEncoderCount =  360 / (100 * 4096);
@@ -113,7 +115,8 @@ public class Arm extends SubsystemBase {
 
 
     public void elbowMove(double speed){
-        elbowMotor.set(speed);
+        double new_speed = MathUtil.applyDeadband(speed, 0.1);
+        elbowMotor.set(new_speed);
     }
 
     public void extensionOut(boolean extend){
@@ -145,7 +148,8 @@ public class Arm extends SubsystemBase {
     } 
 
     public void wristSpin(double speed){
-        wristMotor.set(speed);
+        double new_speed = MathUtil.applyDeadband(speed, 0.1);
+        wristMotor.set(new_speed);
     }
 
 }
