@@ -16,8 +16,19 @@ public class RobotMap {
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_MOTOR = 6; 
     public static final int DRIVETRAIN_BACK_RIGHT_ANGLE_ENCODER = 11; 
     public static final int DRIVETRAIN_BACK_RIGHT_DRIVE_MOTOR = 5; 
+    public static final int ELBOW_MOTOR_ID = 13;
+    public static final int WRIST_MOTOR_ID = 14;
+   //just added and need to be put into the rest of the code
+    public static final int SHOULDER_ANGLE_ENCODER = 15;
+    public static final int ELBOW_ANGLE_ENCODER = 16;
+    public static final int WRIST_ANGLE_ENCODER = 17;
+    public static final int EXTENSION_AMOUNT_ENCODER = 18;
+    //maximum position in degrees
+    //just an estimate change later
+    public static final double shoulderMaximumPosition = 90.0;
 
 
+//pneumatics id's
     public static final int SHOULDER_VALVE_FWD = 0;
     public static final int SHOULDER_VALVE_BACK = 1;
     public static final int EXTENSION_VALVE_OUT = 2;
@@ -25,8 +36,7 @@ public class RobotMap {
     public static final int GRIPPER_VALVE_CLOSE = 4;
     public static final int GRIPPER_VALVE_OPEN = 5;
 
-    public static final int ELBOW_MOTOR_ID = 13;
-    public static final int WRIST_MOTOR_ID = 14;
+    
 
 
 
