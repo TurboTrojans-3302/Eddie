@@ -60,7 +60,7 @@ private final XboxController driveController = new XboxController(0);
 
     // SmartDashboard Buttons
     SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
-    SmartDashboard.putData("TeleOPDrive", new TeleOPDrive( m_drivetrain ));
+    SmartDashboard.putData("TeleOPDrive", new TeleOPDrive( m_drivetrain, m_arm ));
     SmartDashboard.putData("TestSpeed", new TestSpeed(m_drivetrain));
     SmartDashboard.putData("TestSetAngle 0", new TestSetAngle(m_drivetrain, 0));
     SmartDashboard.putData("TestSetAngle 90", new TestSetAngle(m_drivetrain, 90));

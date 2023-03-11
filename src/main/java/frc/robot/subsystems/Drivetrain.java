@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.commands.TeleOPDrive;
 
@@ -95,7 +96,7 @@ public class Drivetrain extends SubsystemBase {
     public Drivetrain() {
         ahrs.calibrate();
 
-        setDefaultCommand(new TeleOPDrive(this));
+        setDefaultCommand(new TeleOPDrive(this, RobotContainer.getInstance().m_arm));
     }
 
     public static Drivetrain getInstance() {
