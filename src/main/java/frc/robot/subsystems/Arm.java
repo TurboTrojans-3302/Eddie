@@ -115,8 +115,7 @@ public class Arm extends SubsystemBase {
 
 
     public void elbowMove(double speed){
-        double new_speed = MathUtil.applyDeadband(speed, 0.1);
-        elbowMotor.set(new_speed);
+        elbowMotor.set(speed);
     }
 
     public void extensionOut(boolean extend){
@@ -148,8 +147,8 @@ public class Arm extends SubsystemBase {
     } 
 
     public void wristSpin(double speed){
-        double new_speed = MathUtil.applyDeadband(speed, 0.1);
-        wristMotor.set(new_speed);
+        
+        wristMotor.set(speed);
     }
 
 }
