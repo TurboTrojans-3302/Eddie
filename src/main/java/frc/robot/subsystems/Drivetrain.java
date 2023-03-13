@@ -39,7 +39,7 @@ public class Drivetrain extends SubsystemBase {
     private static final double startingPositionX = 5.0;
     private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
-    private static final double MAX_SPEED = 4.0; // m/s 
+    public static final double MAX_SPEED = 4.0; // m/s 
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
@@ -221,6 +221,14 @@ public class Drivetrain extends SubsystemBase {
         return -ahrs.getRate();
     }
 
+    public Translation2d getVelocityVector(){
+        Translation2d v1 = new Translation2d(frontLeftModule.getDriveVelocity(), 
+                                         Rotation2d.fromRadians(frontLeftModule.getAbsoluteAngle()));
+        Translation2d v2 = new Translation2d(backRightModule.getDriveVelocity(),
+                                         Rotation2d.fromRadians(backLeftModule.getAbsoluteAngle()));
+        return v1.plus(v2).div(2);
+    }
+
     static public double angleDelta(double src, double dest) {
 		double delta = (dest - src) % 360.0;
 		if(Math.abs(delta) > 180) {
@@ -237,6 +245,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void stop() {
+        frontLeftModule.set(0, frontLeftModule.getSteerAngle());
+        frontRightModule.set(0, frontRightModule.getSteerAngle());
+        backLeftModule.set(0, backLeftModule.getSteerAngle());
+        backRightModule.set(0, backRightModule.getSteerAngle());
     }
 }
 
