@@ -12,19 +12,16 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.MathUtil;
 import frc.robot.RobotMap;
 
 
@@ -38,6 +35,12 @@ import frc.robot.RobotMap;
  */
 public class Arm extends SubsystemBase {
 
+    private static final double ELBOW_MAX = 100.0;
+    private static final double ELBOW_MIN = 0.0;
+    private static final double WRIST_MAX =  3 * 360.0;
+    private static final double WRIST_MIN = -3 * 360.0;
+    
+
     private Compressor compressor;
     private DoubleSolenoid shoulderValve; 
     public DoubleSolenoid extensionValve;
@@ -47,7 +50,7 @@ public class Arm extends SubsystemBase {
     public RelativeEncoder wristEncoder; //angle of wrist
     public RelativeEncoder elbowEncoder; //angle of elbow
     
-
+    private boolean soft_limit_enable = true;
 
  
 
@@ -91,7 +94,13 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
+        soft_limit_enable = SmartDashboard.getBoolean("Arm Soft Limit", true);
+        SmartDashboard.putNumber("Elbow Angle", getElbowAngle());
+        SmartDashboard.putBoolean("Gripper", getClawClosed());
+        SmartDashboard.putBoolean("Extension", getExtensionOut());
+        SmartDashboard.putBoolean("Shoulder", getShoulderForward());
+        SmartDashboard.putBoolean("Pressure Switch", compressor.getPressureSwitchValue());
+        SmartDashboard.putNumber(("Compressor Current"), compressor.getCurrent());
     }
 
     @Override
@@ -115,6 +124,10 @@ public class Arm extends SubsystemBase {
 
 
     public void elbowMove(double speed){
+        if(soft_limit_enable){
+            if(getElbowAngle() >= ELBOW_MAX){ speed = Math.min(0, speed); }
+            if(getElbowAngle() <= ELBOW_MIN){ speed = Math.max(0, speed); }
+        }
         elbowMotor.set(speed);
     }
 
@@ -147,7 +160,10 @@ public class Arm extends SubsystemBase {
     } 
 
     public void wristSpin(double speed){
-        
+        if(soft_limit_enable){
+            if(getWristAngle() >= WRIST_MAX){ speed = Math.min(0, speed); }
+            if(getWristAngle() <= WRIST_MIN){ speed = Math.max(0, speed); }
+        }
         wristMotor.set(speed);
     }
 
