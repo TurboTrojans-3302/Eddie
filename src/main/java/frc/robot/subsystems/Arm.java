@@ -38,7 +38,7 @@ import frc.robot.RobotMap;
  */
 public class Arm extends SubsystemBase {
 
-    private Compressor compressor;
+    //private Compressor compressor;
     private DoubleSolenoid shoulderValve; 
     public DoubleSolenoid extensionValve;
     private DoubleSolenoid gripperValve;
@@ -59,7 +59,7 @@ public class Arm extends SubsystemBase {
     *
     */
     public Arm() {
-        compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+        //compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
         shoulderValve = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.SHOULDER_VALVE_FWD, RobotMap.SHOULDER_VALVE_BACK);
         extensionValve = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.EXTENSION_VALVE_IN, RobotMap.EXTENSION_VALVE_OUT);
         gripperValve = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, RobotMap.GRIPPER_VALVE_OPEN, RobotMap.GRIPPER_VALVE_CLOSE);

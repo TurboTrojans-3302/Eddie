@@ -35,8 +35,8 @@ import frc.robot.commands.TeleOPDrive;
  */
 public class Drivetrain extends SubsystemBase {
    
-    private static final double startingPositionY = 13.5;
-    private static final double startingPositionX = 5.0;
+    private static final double startingPositionY = 0.0;
+    private static final double startingPositionX = 0.0;
     private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
     private static final double MAX_SPEED = 4.0; // m/s 
@@ -48,7 +48,7 @@ public class Drivetrain extends SubsystemBase {
     private static final double kPgain = 0.040;
     private static final double kDgain = 0;
 
-    private static Drivetrain instance;
+    private static Drivetrain m_instance;
 
     private SwerveDriveOdometry mOdometry;
 
@@ -105,9 +105,11 @@ public class Drivetrain extends SubsystemBase {
     private Pose2d m_pose;
  
     public Drivetrain() {
+        m_instance = this;    
+
         ahrs.calibrate();
 
-        setDefaultCommand(new TeleOPDrive(this, RobotContainer.getInstance().m_arm));
+        setDefaultCommand(new TeleOPDrive(this));
 
         mOdometry = new SwerveDriveOdometry(
             kinematics, Rotation2d.fromDegrees(getAngle()),
@@ -117,14 +119,15 @@ public class Drivetrain extends SubsystemBase {
               backLeftModule.getPosition(),
               backRightModule.getPosition()
             }, new Pose2d(startingPositionX, startingPositionY, new Rotation2d()));
+            
     }
 
     public static Drivetrain getInstance() {
-        if (instance == null) {
-            instance = new Drivetrain();
+        if (m_instance == null) {
+            m_instance = new Drivetrain();
         }
 
-        return instance;
+        return m_instance;
     }
 
     @Override
@@ -187,10 +190,10 @@ public class Drivetrain extends SubsystemBase {
         backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
         //TODO we'd really like to set the velocity in m/s
 
-        SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());
-        SmartDashboard.putNumber("Front Right Commanded Angle", states[1].angle.getDegrees());
-        SmartDashboard.putNumber("Back Left Commanded Angle", states[2].angle.getDegrees());
-        SmartDashboard.putNumber("Back Right Commanded Angle", states[3].angle.getDegrees());
+     //SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());
+       // SmartDashboard.putNumber("Front Right Commanded Angle", states[1].angle.getDegrees());
+        //SmartDashboard.putNumber("Back Left Commanded Angle", states[2].angle.getDegrees());
+       // SmartDashboard.putNumber("Back Right Commanded Angle", states[3].angle.getDegrees());
     }
     
     public void setAll(double speed, double angleRadians) {
@@ -198,10 +201,10 @@ public class Drivetrain extends SubsystemBase {
         frontRightModule.set(speed, angleRadians);
         backLeftModule.set(speed, angleRadians);
         backRightModule.set(speed, angleRadians);
-        SmartDashboard.putNumber("Front Left Commanded Angle", Math.toDegrees(angleRadians));
-        SmartDashboard.putNumber("Front Right Commanded Angle", Math.toDegrees(angleRadians));
-        SmartDashboard.putNumber("Back Left Commanded Angle", Math.toDegrees(angleRadians));
-        SmartDashboard.putNumber("Back Right Commanded Angle", Math.toDegrees(angleRadians));
+        //SmartDashboard.putNumber("Front Left Commanded Angle", Math.toDegrees(angleRadians));
+       //SmartDashboard.putNumber("Front Right Commanded Angle", Math.toDegrees(angleRadians));
+        //SmartDashboard.putNumber("Back Left Commanded Angle", Math.toDegrees(angleRadians));
+        //SmartDashboard.putNumber("Back Right Commanded Angle", Math.toDegrees(angleRadians));
     }
 
 
