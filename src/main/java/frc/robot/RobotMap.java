@@ -36,8 +36,7 @@ public class RobotMap {
     public static final int GRIPPER_VALVE_CLOSE = 4;
     public static final int GRIPPER_VALVE_OPEN = 5;
 
-    
-
-
+    //PWM Channels
+    public static final int BLINKIN_LED_PWM_CHANNEL = 0;
 
 }
