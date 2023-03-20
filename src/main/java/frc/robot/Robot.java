@@ -15,9 +15,11 @@ package frc.robot;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.REVBlinkinLED;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -43,6 +45,8 @@ public class Robot extends TimedRobot {
         m_robotContainer = RobotContainer.getInstance();
         HAL.report(tResourceType.kResourceType_Framework, tInstances.kFramework_RobotBuilder);
         m_robotContainer.m_drivetrain.calibrateSterrRelativeEncoder();
+
+        m_robotContainer.revDigitBoard.display("3302");
     }
 
     /**
@@ -67,6 +71,11 @@ public class Robot extends TimedRobot {
     */
     @Override
     public void disabledInit() {
+        if(DriverStation.isEStopped()) {
+            m_robotContainer.revDigitBoard.display("estp");
+        }else{
+            m_robotContainer.revDigitBoard.display("dsbl");
+        }
     }
 
     @Override
@@ -84,6 +93,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+        m_robotContainer.revDigitBoard.display("auto");
+        setAllianceLED();
     }
 
     /**
@@ -102,7 +113,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        //m_robotContainer.m_drivetrain.calibrateSterrRelativeEncoder();
+        m_robotContainer.revDigitBoard.display("tele");
+        setAllianceLED();
     }
 
     /**
@@ -116,6 +128,8 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+        m_robotContainer.revDigitBoard.display("test");
+        setAllianceLED();
     }
 
     /**
@@ -125,4 +139,12 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
     }
 
+    public void setAllianceLED(){
+        if(DriverStation.getAlliance() == DriverStation.Alliance.Blue){
+            m_robotContainer.m_BlinkinLED.set(REVBlinkinLED.Pattern.SOLID_BLUE);
+        }
+        if(DriverStation.getAlliance() == DriverStation.Alliance.Red){
+            m_robotContainer.m_BlinkinLED.set(REVBlinkinLED.Pattern.SOLID_RED);
+        }    
+    }
 }

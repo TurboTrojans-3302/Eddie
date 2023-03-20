@@ -12,8 +12,10 @@ import frc.robot.subsystems.Drivetrain;
 
 public class BalanceOnTheChargingStation extends CommandBase {
 
-  private static final double DRIVE_SPEED = 0.2;
-  private static final double PITCH_TOLERANCE = 5.0;
+  private static final double DRIVE_SPEED = 0.4;
+  private static final double REDUCED_DRIVE_SPEED = 0.2;
+  private static final double PITCH_TOLERANCE = 2.0;
+  private static final double REDUCED_SPEED_PITCH = 8.0;
   private static final double TIME_LIMIT = 1.0;
   private Drivetrain m_drivetrain;
   private Timer m_timer;
@@ -22,6 +24,7 @@ public class BalanceOnTheChargingStation extends CommandBase {
   public BalanceOnTheChargingStation(Drivetrain subsystem) {
     m_drivetrain = subsystem;
     addRequirements(m_drivetrain);
+    m_timer = new Timer();
   }
 
   // Called when the command is initially scheduled.
@@ -35,13 +38,31 @@ public class BalanceOnTheChargingStation extends CommandBase {
   public void execute() {
     System.out.println("pitch is: " + m_drivetrain.getPitch());
     if (m_drivetrain.getPitch() > PITCH_TOLERANCE){
-      m_drivetrain.drive(new Translation2d(DRIVE_SPEED, 0), 0, false);
-      m_timer.reset();
+      if (m_drivetrain.getPitch() < REDUCED_SPEED_PITCH){
+        m_drivetrain.drive(new Translation2d(REDUCED_DRIVE_SPEED, 0), 0, false);
+        m_timer.reset();
+      } 
+        else {m_drivetrain.drive(new Translation2d(DRIVE_SPEED, 0), 0, false);
+        m_timer.reset();
+      }
+      
+      
     }
-    else if (m_drivetrain.getPitch() < -PITCH_TOLERANCE){
-      m_drivetrain.drive(new Translation2d(-0.2, 0), 0, false);
-      m_timer.reset();
-    }
+        else if (m_drivetrain.getPitch() < -PITCH_TOLERANCE){
+          if (m_drivetrain.getPitch() < -REDUCED_SPEED_PITCH){
+            m_drivetrain.drive(new Translation2d(-REDUCED_DRIVE_SPEED, 0), 0, false);
+            m_timer.reset();
+          } else {
+          m_drivetrain.drive(new Translation2d(-0.2, 0), 0, false);
+           m_timer.reset();
+
+          }
+         
+          
+          
+          
+      
+        }
     else {
       m_drivetrain.stop();
     }
