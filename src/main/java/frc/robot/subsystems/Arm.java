@@ -101,6 +101,7 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Elbow Angle", getElbowAngle());
         SmartDashboard.putNumber("Elbow Rate", getElbowSpeed());
+        SmartDashboard.putString("Gripper", getClawClosed() ? "CLOSED" : "OPEN");
     }
 
     @Override

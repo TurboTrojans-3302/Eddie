@@ -38,6 +38,7 @@ public class Drivetrain extends SubsystemBase {
     private static final double startingPositionX = 0.0;
     private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
+    private static final double ORBIT_DX = 0.3; // distance from front to orbit center
     public static final double MAX_SPEED = 4.0; // m/s 
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
@@ -93,13 +94,20 @@ public class Drivetrain extends SubsystemBase {
                                                         BACK_RIGHT_ANGLE_OFFSET );
                          
                         
-    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            new Translation2d(-WHEELBASE / 2.0, TRACKWIDTH / 2.0),  //front left
-            new Translation2d(-WHEELBASE / 2.0, -TRACKWIDTH / 2.0), //front right
-            new Translation2d(WHEELBASE / 2.0, TRACKWIDTH / 2.0), //back  left
-            new Translation2d(WHEELBASE / 2.0, -TRACKWIDTH / 2.0) //back  right
+    private final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
+        new Translation2d(-ORBIT_DX, TRACKWIDTH / 2.0),  //front left
+        new Translation2d(-ORBIT_DX, -TRACKWIDTH / 2.0), //front right
+        new Translation2d(WHEELBASE + ORBIT_DX, TRACKWIDTH / 2.0), //back  left
+        new Translation2d(WHEELBASE + ORBIT_DX, -TRACKWIDTH / 2.0) //back  right
     );
 
+    private final SwerveDriveKinematics orbitKinematics = new SwerveDriveKinematics(
+        new Translation2d(-WHEELBASE / 2.0, TRACKWIDTH / 2.0),  //front left
+        new Translation2d(-WHEELBASE / 2.0, -TRACKWIDTH / 2.0), //front right
+        new Translation2d(WHEELBASE / 2.0, TRACKWIDTH / 2.0), //back  left
+        new Translation2d(WHEELBASE / 2.0, -TRACKWIDTH / 2.0) //back  right
+    );
+                                            
     private final AHRS ahrs = new AHRS(SerialPort.Port.kUSB);
     private Pose2d m_pose;
  
@@ -111,7 +119,7 @@ public class Drivetrain extends SubsystemBase {
         setDefaultCommand(new TeleOPDrive(this));
 
         mOdometry = new SwerveDriveOdometry(
-            kinematics, Rotation2d.fromDegrees(getAngle()),
+            driveKinematics, Rotation2d.fromDegrees(getAngle()),
             new SwerveModulePosition[] {
               frontLeftModule.getPosition(),
               frontRightModule.getPosition(),
@@ -142,18 +150,16 @@ public class Drivetrain extends SubsystemBase {
                         });
 
 
-        SmartDashboard.putString("frontleft", frontLeftModule.getPosition().toString());
-        SmartDashboard.putString("frontRight", frontRightModule.getPosition().toString());
-        SmartDashboard.putString("backLeft", backLeftModule.getPosition().toString());
-        SmartDashboard.putString("backRight", backRightModule.getPosition().toString());
-        SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getSteerAngle()));
-        SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
-        SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
-        SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
-
-        // SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
-        // SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
-
+        // SmartDashboard.putString("frontleft", frontLeftModule.getPosition().toString());
+        // SmartDashboard.putString("frontRight", frontRightModule.getPosition().toString());
+        // SmartDashboard.putString("backLeft", backLeftModule.getPosition().toString());
+        // SmartDashboard.putString("backRight", backRightModule.getPosition().toString());
+        // SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getSteerAngle()));
+        // SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
+        // SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
+        // SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
+        SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
+        SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
         SmartDashboard.putString("Pose:", m_pose.toString());
 
     }
@@ -169,11 +175,18 @@ public class Drivetrain extends SubsystemBase {
 		double angle_error = angleDelta(heading, angle);
 		double yawCommand = - angle_error * kPgain - (currentAngularRate) * kDgain;
 
-        drive(translation, yawCommand, true);
+        move(translation, yawCommand, true, driveKinematics);
     }
 
+    public void drive(Translation2d translation, double rotation, boolean fieldOriented){
+        move(translation, rotation, fieldOriented, driveKinematics);
+    }
 
-    public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
+    public void orbit(double speed){
+        move(new Translation2d(), speed, false, orbitKinematics);
+    }
+
+    public void move(Translation2d translation, double rotation, boolean fieldOriented, SwerveDriveKinematics kinematics) {
 
         translation = translation.times(MAX_SPEED);
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
@@ -185,18 +198,11 @@ public class Drivetrain extends SubsystemBase {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
 
-
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         frontLeftModule.set(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.set(states[1].speedMetersPerSecond, states[1].angle.getRadians());
         backLeftModule.set(states[2].speedMetersPerSecond, states[2].angle.getRadians());
         backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
-        //TODO we'd really like to set the velocity in m/s
-
-     //SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());
-       // SmartDashboard.putNumber("Front Right Commanded Angle", states[1].angle.getDegrees());
-        //SmartDashboard.putNumber("Back Left Commanded Angle", states[2].angle.getDegrees());
-       // SmartDashboard.putNumber("Back Right Commanded Angle", states[3].angle.getDegrees());
     }
     
     public void setAll(double speed, double angleRadians) {

@@ -75,10 +75,12 @@ public class TeleOPDrive extends CommandBase {
         double forward = -driveController.getLeftY();
         double leftward = driveController.getLeftX();
         double turn = -driveController.getRightX();
+        double orbit = driveController.getRightTriggerAxis() - driveController.getLeftTriggerAxis();
 
         forward = MathUtil.applyDeadband(forward, DRIVE_DEADBAND);
         leftward = MathUtil.applyDeadband(leftward, DRIVE_DEADBAND);        
         turn = MathUtil.applyDeadband(turn, DRIVE_DEADBAND);
+        orbit = MathUtil.applyDeadband(orbit, DRIVE_DEADBAND);
 
 
         Joystick armJoystick = RobotContainer.getInstance().getArmJoystick();
@@ -86,12 +88,13 @@ public class TeleOPDrive extends CommandBase {
     
         SmartDashboard.putBoolean("Field Oriented", field_oriented);
 
-        //Format data to send to the drivetrain
-        Translation2d translation = new Translation2d(forward, leftward);
-        double rotation = turn * Math.PI;
-
-        //Send it to the drivetrain
-        m_drivetrain.drive(translation, rotation, field_oriented);
+        if(forward != 0.0 || leftward != 0.0 || turn != 0.0){
+            Translation2d translation = new Translation2d(forward, leftward);
+            double rotation = turn * Math.PI;
+            m_drivetrain.drive(translation, rotation, field_oriented);
+        }else if(orbit != 0.0){
+            m_drivetrain.orbit(orbit);
+        }
 
         double elbowSpeed = armJoystick.getY();
         elbowSpeed = MathUtil.applyDeadband(elbowSpeed, 0.1);
