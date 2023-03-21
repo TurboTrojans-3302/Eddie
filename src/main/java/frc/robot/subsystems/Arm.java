@@ -16,6 +16,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import frc.robot.RobotMap;
@@ -69,6 +71,8 @@ public class Arm extends SubsystemBase {
         gripperValve.set(Value.kForward);
 
         elbowMotor = new CANSparkMax(RobotMap.ELBOW_MOTOR_ID, MotorType.kBrushless);
+        elbowMotor.setIdleMode(IdleMode.kBrake);
+        elbowMotor.setInverted(true);
         wristMotor = new CANSparkMax(RobotMap.WRIST_MOTOR_ID, MotorType.kBrushless);
 
         wristEncoder = wristMotor.getEncoder();
@@ -82,6 +86,10 @@ public class Arm extends SubsystemBase {
         return elbowDegreesPerEncoderCount * elbowEncoder.getPosition();
     }
 
+    public double getElbowSpeed(){
+        return elbowDegreesPerEncoderCount * elbowEncoder.getVelocity();
+    }
+
     public final double wristDegreesPerEncoderCount = 360 / (4096);
 
     public double getWristAngle(){
@@ -91,7 +99,8 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-
+        SmartDashboard.putNumber("Elbow Angle", getElbowAngle());
+        SmartDashboard.putNumber("Elbow Rate", getElbowSpeed());
     }
 
     @Override
