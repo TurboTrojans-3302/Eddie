@@ -58,6 +58,7 @@ public class TTSwerveModule implements SwerveModule {
     
         // Setup encoder
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
+        driveEncoder.setPosition(0);
         double positionConversionFactor = Math.PI * mechanicalConfiguration.getWheelDiameter() * mechanicalConfiguration.getDriveReduction();
         driveEncoder.setPositionConversionFactor(positionConversionFactor);
         driveEncoder.setVelocityConversionFactor(positionConversionFactor / 60.0);
@@ -77,6 +78,7 @@ public class TTSwerveModule implements SwerveModule {
 
         CANCoder encoder = new CANCoder(encoderconfig.getId());
         CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
+        System.out.println("encoder abs sensor range:" + encoder.configGetAbsoluteSensorRange().toString());
 
         CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100, 250), "Failed to configure CANCoder update rate");
 
@@ -358,6 +360,6 @@ public class TTSwerveModule implements SwerveModule {
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
             mDriveController.encoder.getPosition(),
-            new Rotation2d(mSteerController.absoluteEncoder.getPosition()));
+            new Rotation2d(getSteerAngle()));
     }
 }

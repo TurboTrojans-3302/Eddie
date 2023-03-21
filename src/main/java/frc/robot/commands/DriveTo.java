@@ -30,6 +30,10 @@ public class DriveTo extends CommandBase {
     m_dest = destination;
   }
 
+  public DriveTo(double x, double y){
+    this(new Pose2d(new Translation2d(x, y), new Rotation2d()));
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}

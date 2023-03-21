@@ -26,7 +26,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.commands.TeleOPDrive;
 
@@ -143,13 +142,17 @@ public class Drivetrain extends SubsystemBase {
                         });
 
 
+        SmartDashboard.putString("frontleft", frontLeftModule.getPosition().toString());
+        SmartDashboard.putString("frontRight", frontRightModule.getPosition().toString());
+        SmartDashboard.putString("backLeft", backLeftModule.getPosition().toString());
+        SmartDashboard.putString("backRight", backRightModule.getPosition().toString());
         SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
 
-        SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
-        SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
+        // SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
+        // SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
 
         SmartDashboard.putString("Pose:", m_pose.toString());
 
