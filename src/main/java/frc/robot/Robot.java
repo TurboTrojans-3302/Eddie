@@ -14,11 +14,15 @@ package frc.robot;
 
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.REVBlinkinLED;
 
 /**
@@ -87,6 +91,11 @@ public class Robot extends TimedRobot {
     */
     @Override
     public void autonomousInit() {
+        double x = SmartDashboard.getNumber("Starting X", Drivetrain.defaultStartPosition.getX());
+        double y = SmartDashboard.getNumber("Starting Y", Drivetrain.defaultStartPosition.getY());
+        double theta = SmartDashboard.getNumber("Starting Angle", Drivetrain.defaultStartPosition.getRotation().getDegrees());
+        m_robotContainer.m_drivetrain.setPose2d(new Pose2d(x, y, Rotation2d.fromDegrees(theta)));
+
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)

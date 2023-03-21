@@ -34,11 +34,10 @@ import frc.robot.commands.TeleOPDrive;
  */
 public class Drivetrain extends SubsystemBase {
    
-    private static final double startingPositionY = 0.0;
-    private static final double startingPositionX = 0.0;
-    private static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
-    private static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
+    public static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
+    public static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
     public static final double MAX_SPEED = 4.0; // m/s 
+    public static final Pose2d defaultStartPosition = new Pose2d(WHEELBASE/2, 2.75, Rotation2d.fromDegrees(0));
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
@@ -117,7 +116,7 @@ public class Drivetrain extends SubsystemBase {
               frontRightModule.getPosition(),
               backLeftModule.getPosition(),
               backRightModule.getPosition()
-            }, new Pose2d(startingPositionX, startingPositionY, new Rotation2d()));
+            }, defaultStartPosition);
             
     }
 
@@ -160,6 +159,10 @@ public class Drivetrain extends SubsystemBase {
 
     public Pose2d getPose2d(){
         return m_pose;
+    }
+
+    public void setPose2d(Pose2d pose){
+        m_pose = pose;
     }
 
     public void driveHeading(Translation2d translation, double heading) {
