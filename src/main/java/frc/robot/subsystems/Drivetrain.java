@@ -110,7 +110,7 @@ public class Drivetrain extends SubsystemBase {
         setDefaultCommand(new TeleOPDrive(this));
 
         mOdometry = new SwerveDriveOdometry(
-            kinematics, Rotation2d.fromDegrees(getAngle()),
+            kinematics, Rotation2d.fromRadians(getAngleRad()),
             new SwerveModulePosition[] {
               frontLeftModule.getPosition(),
               frontRightModule.getPosition(),
@@ -131,7 +131,7 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         // Get the rotation of the robot from the gyro.
-        var gyroAngle = Rotation2d.fromDegrees(getAngle());
+        var gyroAngle = Rotation2d.fromRadians(getAngleRad());
 
          // Update the pose
          m_pose = mOdometry.update(gyroAngle,
@@ -167,9 +167,9 @@ public class Drivetrain extends SubsystemBase {
 
     public void driveHeading(Translation2d translation, double heading) {
 
-        double angle = getAngle();
-		double currentAngularRate = getAngularRate();
-		double angle_error = angleDelta(heading, angle);
+        double angle = getAngleDeg();
+		double currentAngularRate = getAngularRateDegPerSec();
+		double angle_error = angleDeltaDeg(heading, angle);
 		double yawCommand = - angle_error * kPgain - (currentAngularRate) * kDgain;
 
         drive(translation, yawCommand, true);
@@ -218,15 +218,26 @@ public class Drivetrain extends SubsystemBase {
         ahrs.setAngleAdjustment(ahrs.getAngle() - ahrs.getAngleAdjustment());
     }
 
-    public double getPitch() {
+    public double getPitchDeg() {
        return ahrs.getPitch();
     }
 
-    public double getAngle() {
+    public double getAngleDeg() {
         return -ahrs.getAngle();
     }
 
-    public double getAngularRate() {
+    public double getAngleRad(){
+        return Math.toRadians(getAngleDeg());
+    }
+
+    public void setAngleDeg(double robotangle) {
+        double angle2 = -robotangle;
+        double err = angle2 - ahrs.getAngle();
+        double newAdj = err + ahrs.getAngleAdjustment();
+        ahrs.setAngleAdjustment(newAdj);
+    }
+
+    public double getAngularRateDegPerSec() {
         return -ahrs.getRate();
     }
 
@@ -238,7 +249,7 @@ public class Drivetrain extends SubsystemBase {
         return v1.plus(v2).div(2);
     }
 
-    static public double angleDelta(double src, double dest) {
+    static public double angleDeltaDeg(double src, double dest) {
 		double delta = (dest - src) % 360.0;
 		if(Math.abs(delta) > 180) {
 			delta = delta - (Math.signum(delta) * 360);

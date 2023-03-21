@@ -36,9 +36,9 @@ public class BalanceOnTheChargingStation extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("pitch is: " + m_drivetrain.getPitch());
-    if (m_drivetrain.getPitch() > PITCH_TOLERANCE){
-      if (m_drivetrain.getPitch() < REDUCED_SPEED_PITCH){
+    System.out.println("pitch is: " + m_drivetrain.getPitchDeg());
+    if (m_drivetrain.getPitchDeg() > PITCH_TOLERANCE){
+      if (m_drivetrain.getPitchDeg() < REDUCED_SPEED_PITCH){
         m_drivetrain.drive(new Translation2d(REDUCED_DRIVE_SPEED, 0), 0, false);
         m_timer.reset();
       } 
@@ -48,8 +48,8 @@ public class BalanceOnTheChargingStation extends CommandBase {
       
       
     }
-        else if (m_drivetrain.getPitch() < -PITCH_TOLERANCE){
-          if (m_drivetrain.getPitch() < -REDUCED_SPEED_PITCH){
+        else if (m_drivetrain.getPitchDeg() < -PITCH_TOLERANCE){
+          if (m_drivetrain.getPitchDeg() < -REDUCED_SPEED_PITCH){
             m_drivetrain.drive(new Translation2d(-REDUCED_DRIVE_SPEED, 0), 0, false);
             m_timer.reset();
           } else {
