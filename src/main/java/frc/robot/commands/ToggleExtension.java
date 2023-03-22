@@ -4,11 +4,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 
-public class ToggleExtension extends CommandBase {
+public class ToggleExtension extends InstantCommand {
   private Arm m_arm;
   
   /** Creates a new ToggleExtension. */
@@ -25,17 +25,4 @@ public class ToggleExtension extends CommandBase {
     m_arm.extensionOut(!m_arm.getExtensionOut());
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
 }

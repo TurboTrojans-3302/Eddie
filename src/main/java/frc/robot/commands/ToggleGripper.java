@@ -4,11 +4,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 
-public class ToggleGripper extends CommandBase {
+public class ToggleGripper extends InstantCommand {
 
   private Arm m_arm;
   
@@ -27,17 +27,4 @@ public class ToggleGripper extends CommandBase {
     m_arm.clawClosed(!m_arm.getClawClosed());
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return true;
-  }
 }

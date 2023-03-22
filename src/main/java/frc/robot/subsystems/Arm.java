@@ -12,21 +12,16 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.MathUtil;
 import frc.robot.RobotMap;
 
 
@@ -101,6 +96,9 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Elbow Angle", getElbowAngle());
         SmartDashboard.putNumber("Elbow Rate", getElbowSpeed());
+        SmartDashboard.putString("Shoulder", shoulderValve.get().toString());
+        SmartDashboard.putString("Claw", getClawClosed() ? "Closed":"Open");
+        SmartDashboard.putString("Extension", getExtensionOut() ? "Out":"In");
     }
 
     @Override
@@ -127,11 +125,38 @@ public class Arm extends SubsystemBase {
         elbowMotor.set(speed);
     }
 
+    //elbow angle limits
+    //speeds might need to be inverted
+    //public void elbowMove(double speed){
+      //   double new_speed = MathUtil.applyDeadband(speed, 0.1)
+      // if (getElbowAngle() == 0){
+           // if (new_speed < 0){
+                //stops the motor if it is going to hit the robot base
+             //   new_speed = 0;
+          //  } else {
+           //     elbowMotor.set(new_speed);
+           // }
+
+        //other limit angle (might need modification)
+       // if (getElbowAngle() == 90) {
+          //  if (new_speed > 0) {
+                // need to add in code for holding the motor in one position
+                //new_speed = 0;
+           // } else {
+              //  elbowMotor.set(new_speed);
+          //  }
+        
+       // }
+        //}
+        
+        
+   // }
+
     public void extensionOut(boolean extend){
         if (extend){
-            shoulderValve.set(Value.kForward);
+            extensionValve.set(Value.kForward);
         } else {
-            shoulderValve.set(Value.kReverse);
+            extensionValve.set(Value.kReverse);
         }
     }
 
@@ -157,8 +182,7 @@ public class Arm extends SubsystemBase {
 
     public void wristSpin(double speed){
         
-        wristMotor.set(speed);
+        wristMotor.set(-speed);
     }
 
 }
-

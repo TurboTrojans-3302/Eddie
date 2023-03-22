@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.REVBlinkinLED;
+import edu.wpi.first.cameraserver.CameraServer;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -51,6 +53,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.m_drivetrain.calibrateSterrRelativeEncoder();
 
         m_robotContainer.revDigitBoard.display("3302");
+        CameraServer.startAutomaticCapture();
     }
 
     /**

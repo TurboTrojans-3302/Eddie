@@ -94,11 +94,11 @@ public class TeleOPDrive extends CommandBase {
         m_drivetrain.drive(translation, rotation, field_oriented);
 
         double elbowSpeed = armJoystick.getY();
-        elbowSpeed = MathUtil.applyDeadband(elbowSpeed, 0.1);
+        elbowSpeed = MathUtil.applyDeadband(elbowSpeed, 0.15);
         m_arm.elbowMove(elbowSpeed);
 
         double wristSpeed = armJoystick.getX();
-        wristSpeed = MathUtil.applyDeadband(wristSpeed, 0.1);
+        wristSpeed = MathUtil.applyDeadband(wristSpeed, 0.15);
         m_arm.wristSpin(wristSpeed);
         
         double shoulderCommand = armJoystick.getThrottle();
