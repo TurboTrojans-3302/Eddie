@@ -14,8 +14,7 @@ public class CrossTheLine extends SequentialCommandGroup {
   public CrossTheLine() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new DriveX(0.05));
-    addCommands(new DriveX(-1));
     addCommands(new DriveX(3));
+    addCommands(new DriveX(-1));
   }
 }
