@@ -39,10 +39,10 @@ public class BalanceOnTheChargingStation extends CommandBase {
     System.out.println("pitch is: " + m_drivetrain.getPitchDeg());
     if (m_drivetrain.getPitchDeg() > PITCH_TOLERANCE){
       if (m_drivetrain.getPitchDeg() < REDUCED_SPEED_PITCH){
-        m_drivetrain.drive(new Translation2d(REDUCED_DRIVE_SPEED, 0), 0, false);
+        m_drivetrain.drive(new Translation2d(REDUCED_DRIVE_SPEED, 0), 0, true);
         m_timer.reset();
       } 
-        else {m_drivetrain.drive(new Translation2d(DRIVE_SPEED, 0), 0, false);
+        else {m_drivetrain.drive(new Translation2d(DRIVE_SPEED, 0), 0, true);
         m_timer.reset();
       }
       
@@ -50,10 +50,10 @@ public class BalanceOnTheChargingStation extends CommandBase {
     }
         else if (m_drivetrain.getPitchDeg() < -PITCH_TOLERANCE){
           if (m_drivetrain.getPitchDeg() < -REDUCED_SPEED_PITCH){
-            m_drivetrain.drive(new Translation2d(-REDUCED_DRIVE_SPEED, 0), 0, false);
+            m_drivetrain.drive(new Translation2d(-REDUCED_DRIVE_SPEED, 0), 0, true);
             m_timer.reset();
           } else {
-          m_drivetrain.drive(new Translation2d(-0.2, 0), 0, false);
+          m_drivetrain.drive(new Translation2d(-0.2, 0), 0, true);
            m_timer.reset();
 
           }
