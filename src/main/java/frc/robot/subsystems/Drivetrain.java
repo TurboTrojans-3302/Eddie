@@ -265,10 +265,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void stop() {
-        frontLeftModule.set(0, frontLeftModule.getSteerAngle());
-        frontRightModule.set(0, frontRightModule.getSteerAngle());
-        backLeftModule.set(0, backLeftModule.getSteerAngle());
-        backRightModule.set(0, backRightModule.getSteerAngle());
+        frontLeftModule.set(0, Math.PI/4);
+        frontRightModule.set(0, -Math.PI/4);
+        backLeftModule.set(0, -Math.PI/4);
+        backRightModule.set(0, Math.PI);
     }
 }
 

@@ -36,10 +36,10 @@ import frc.robot.RobotMap;
 public class Arm extends SubsystemBase {
 
     
-    private static final int ELBOW_MIN = 0;
-    private static final int ELBOW_MAX = 100;
-    private static final int WRIST_MAX = 80;
-    private static final double WRIST_MIN = -80;
+    private static final double ELBOW_MIN = 5.0;
+    private static final double ELBOW_MAX = 50.0;
+    private static final int WRIST_MAX = 55;
+    private static final double WRIST_MIN = -55;
     //private Compressor compressor;
     private DoubleSolenoid shoulderValve; 
     public DoubleSolenoid extensionValve;
@@ -80,7 +80,7 @@ public class Arm extends SubsystemBase {
         
     }
 
-   public final double elbowDegreesPerEncoderCount =  360.0 * (60/26) / (100 * 4096);
+   public final double elbowDegreesPerEncoderCount =  1.0;
 
     public double getElbowAngle(){
         return elbowDegreesPerEncoderCount * elbowEncoder.getPosition();
@@ -90,7 +90,7 @@ public class Arm extends SubsystemBase {
         return elbowDegreesPerEncoderCount * elbowEncoder.getVelocity();
     }
 
-    public final double wristDegreesPerEncoderCount = 360.0 / (4096);
+    public final double wristDegreesPerEncoderCount = (112.4/143.7);
 
     public double getWristAngle(){
         return wristDegreesPerEncoderCount * wristEncoder.getPosition();
@@ -128,13 +128,13 @@ public class Arm extends SubsystemBase {
 
 
     public void elbowMove(double speed){
-        elbowMotor.set(speed);
         if(getElbowAngle() >= ELBOW_MAX){
-            speed = Math.max(0, speed);
+            speed = Math.min(0, speed);
         } 
         if(getElbowAngle() <= ELBOW_MIN){
-            speed = Math.min(0, speed);
+            speed = Math.max(0, speed);
         }
+        elbowMotor.set(speed);
     }
 
     public void extensionOut(boolean extend){
@@ -170,11 +170,11 @@ public class Arm extends SubsystemBase {
         speed = -speed;
 
         if(getWristAngle() >= WRIST_MAX ){
-            speed = Math.max(0, speed);
+            speed = Math.min(0, speed);
         }
 
         if(getWristAngle() <= WRIST_MIN){
-            speed = Math.min(0, speed);
+            speed = Math.max(0, speed);
         }
 
         wristMotor.set(speed);

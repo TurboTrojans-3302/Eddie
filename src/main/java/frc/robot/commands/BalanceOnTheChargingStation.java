@@ -31,6 +31,7 @@ public class BalanceOnTheChargingStation extends CommandBase {
   @Override
   public void initialize() {
     m_timer.start();
+    // 
   }
 
   // Called every time the scheduler runs while the command is scheduled.

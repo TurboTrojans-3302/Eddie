@@ -91,7 +91,11 @@ public class TeleOPDrive extends CommandBase {
         double rotation = turn * Math.PI;
 
         //Send it to the drivetrain
-        m_drivetrain.drive(translation, rotation, field_oriented);
+        if(driveController.getBButton()){
+            m_drivetrain.stop();
+        }else{
+            m_drivetrain.drive(translation, rotation, field_oriented);
+        }
 
         double elbowSpeed = armJoystick.getY();
         elbowSpeed = MathUtil.applyDeadband(elbowSpeed, 0.15);
