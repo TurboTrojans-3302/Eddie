@@ -15,7 +15,9 @@ public class BumpCubeAndCross extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new DriveX(0.3, 0.3));
+    addCommands(new Wait(0.5));
     addCommands(new DriveX(-0.25, 0.3));
+    addCommands(new Wait(0.5));
     addCommands(new DriveX(3, 0.3));
    
   }
