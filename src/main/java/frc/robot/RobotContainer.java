@@ -89,6 +89,7 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Do Nothing", new DoNothing());
     m_chooser.addOption("Charging Station", new SimpleBalanceOnChargeStation(m_drivetrain));
     m_chooser.addOption("CrossTheLine", new CrossTheLine());
+    m_chooser.addOption("Bump Cube & Cross", new BumpCubeAndCross());
     //SmartDashboard.putData("Auto Mode", m_chooser);
     Shuffleboard.getTab("Tab 1").add("Auto Mode",m_chooser);
     

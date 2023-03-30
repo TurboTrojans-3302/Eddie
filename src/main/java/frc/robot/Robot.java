@@ -107,6 +107,9 @@ public class Robot extends TimedRobot {
         }
         m_robotContainer.revDigitBoard.display("auto");
         setAllianceLED();
+        m_robotContainer.m_arm.shoulderForward(true);
+        m_robotContainer.m_arm.extensionOut(false);
+        m_robotContainer.m_arm.clawClosed(true);
     }
 
     /**

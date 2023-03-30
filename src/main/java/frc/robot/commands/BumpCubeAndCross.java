@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class CrossTheLine extends SequentialCommandGroup {
-  /** Creates a new CrossTheLine. */
-  public CrossTheLine() {
+public class BumpCubeAndCross extends SequentialCommandGroup {
+  /** Creates a new BumpCubeAndCross. */
+  public BumpCubeAndCross() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new DriveX(2, 0.3));
-    addCommands(new DriveX(-1, 0.3));
+    addCommands(new DriveX(0.3, 0.3));
+    addCommands(new DriveX(-0.25, 0.3));
+    addCommands(new DriveX(3, 0.3));
+   
   }
 }

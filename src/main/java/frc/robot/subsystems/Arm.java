@@ -35,6 +35,11 @@ import frc.robot.RobotMap;
  */
 public class Arm extends SubsystemBase {
 
+    
+    private static final int ELBOW_MIN = 0;
+    private static final int ELBOW_MAX = 100;
+    private static final int WRIST_MAX = 80;
+    private static final double WRIST_MIN = -80;
     //private Compressor compressor;
     private DoubleSolenoid shoulderValve; 
     public DoubleSolenoid extensionValve;
@@ -75,7 +80,7 @@ public class Arm extends SubsystemBase {
         
     }
 
-   public final double elbowDegreesPerEncoderCount =  360 / (100 * 4096);
+   public final double elbowDegreesPerEncoderCount =  360.0 * (60/26) / (100 * 4096);
 
     public double getElbowAngle(){
         return elbowDegreesPerEncoderCount * elbowEncoder.getPosition();
@@ -85,7 +90,7 @@ public class Arm extends SubsystemBase {
         return elbowDegreesPerEncoderCount * elbowEncoder.getVelocity();
     }
 
-    public final double wristDegreesPerEncoderCount = 360 / (4096);
+    public final double wristDegreesPerEncoderCount = 360.0 / (4096);
 
     public double getWristAngle(){
         return wristDegreesPerEncoderCount * wristEncoder.getPosition();
@@ -94,6 +99,7 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Wrist Angle", getWristAngle());
         SmartDashboard.putNumber("Elbow Angle", getElbowAngle());
         SmartDashboard.putNumber("Elbow Rate", getElbowSpeed());
         SmartDashboard.putString("Shoulder", shoulderValve.get().toString());
@@ -123,34 +129,13 @@ public class Arm extends SubsystemBase {
 
     public void elbowMove(double speed){
         elbowMotor.set(speed);
+        if(getElbowAngle() >= ELBOW_MAX){
+            speed = Math.max(0, speed);
+        } 
+        if(getElbowAngle() <= ELBOW_MIN){
+            speed = Math.min(0, speed);
+        }
     }
-
-    //elbow angle limits
-    //speeds might need to be inverted
-    //public void elbowMove(double speed){
-      //   double new_speed = MathUtil.applyDeadband(speed, 0.1)
-      // if (getElbowAngle() == 0){
-           // if (new_speed < 0){
-                //stops the motor if it is going to hit the robot base
-             //   new_speed = 0;
-          //  } else {
-           //     elbowMotor.set(new_speed);
-           // }
-
-        //other limit angle (might need modification)
-       // if (getElbowAngle() == 90) {
-          //  if (new_speed > 0) {
-                // need to add in code for holding the motor in one position
-                //new_speed = 0;
-           // } else {
-              //  elbowMotor.set(new_speed);
-          //  }
-        
-       // }
-        //}
-        
-        
-   // }
 
     public void extensionOut(boolean extend){
         if (extend){
@@ -174,6 +159,7 @@ public class Arm extends SubsystemBase {
 
     public boolean getShoulderForward(){
         return Value.kForward == shoulderValve.get();
+        
     }
 
     public boolean getExtensionOut(){
@@ -181,8 +167,21 @@ public class Arm extends SubsystemBase {
     } 
 
     public void wristSpin(double speed){
-        
-        wristMotor.set(-speed);
+        speed = -speed;
+
+        if(getWristAngle() >= WRIST_MAX ){
+            speed = Math.max(0, speed);
+        }
+
+        if(getWristAngle() <= WRIST_MIN){
+            speed = Math.min(0, speed);
+        }
+
+        wristMotor.set(speed);
+
+
     }
+
+
 
 }

@@ -29,12 +29,12 @@ public class RobotMap {
 
 
 //pneumatics id's
-    public static final int SHOULDER_VALVE_FWD = 0;
+    public static final int SHOULDER_VALVE_FWD  = 0;
     public static final int SHOULDER_VALVE_BACK = 1;
-    public static final int EXTENSION_VALVE_OUT = 2;
-    public static final int EXTENSION_VALVE_IN = 3;
-    public static final int GRIPPER_VALVE_CLOSE = 4;
-    public static final int GRIPPER_VALVE_OPEN = 5;
+    public static final int EXTENSION_VALVE_OUT = 5;
+    public static final int EXTENSION_VALVE_IN  = 4;
+    public static final int GRIPPER_VALVE_CLOSE = 3;
+    public static final int GRIPPER_VALVE_OPEN  = 2;
 
     //PWM Channels
     public static final int BLINKIN_LED_PWM_CHANNEL = 0;

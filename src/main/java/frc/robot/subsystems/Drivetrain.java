@@ -37,13 +37,13 @@ public class Drivetrain extends SubsystemBase {
     public static final double TRACKWIDTH = 19.5 * 0.0254; //distance between the left and right wheels
     public static final double WHEELBASE = 23.5 * 0.0254; //front to back distance
     public static final double MAX_SPEED = 5.0; // m/s 
-    public static final Pose2d defaultStartPosition = new Pose2d(WHEELBASE/2, 2.75, Rotation2d.fromDegrees(0));
+    public static final Pose2d defaultStartPosition = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
 
     private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(29.8);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.3);
     private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(124.4);
     private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(341.6);
-    private static final double kPgain = 0.040;
+    private static final double kPgain = 0.080;
     private static final double kDgain = 0;
 
     private static Drivetrain m_instance;
