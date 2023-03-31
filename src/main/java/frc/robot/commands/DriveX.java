@@ -37,7 +37,7 @@ public class DriveX extends CommandBase {
   public void execute() {
     double x_vel = m_speed * Math.signum(dx());
     m_drivetrain.drive(new Translation2d(x_vel, 0), 0, true);
-    System.out.println("DriveX execute: dx" + dx());
+    //System.out.println("DriveX execute: dx" + dx());
   }
 
   // Called once the command ends or is interrupted.
