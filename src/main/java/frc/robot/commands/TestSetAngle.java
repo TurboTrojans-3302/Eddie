@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
-public class TestSetAngle extends CommandBase {
+public class TestSetAngle extends Command {
   private Drivetrain m_drivetrain;
   private double m_angle;
 

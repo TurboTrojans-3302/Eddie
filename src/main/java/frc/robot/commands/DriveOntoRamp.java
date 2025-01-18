@@ -8,10 +8,10 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveOntoRamp extends CommandBase {
+public class DriveOntoRamp extends Command {
   private static final double PITCH_THRESHOLD = 8.0;
   private static final double DRIVE_SPEED_PCT = 0.3;
   private Drivetrain m_drivetrain;

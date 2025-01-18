@@ -5,10 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
-public class DriveX extends CommandBase {
+public class DriveX extends Command {
   private static final double TOLERANCE = 0.100;
   private static final double DRIVE_SPEED = 0.4;
   Drivetrain m_drivetrain;

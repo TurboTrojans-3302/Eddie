@@ -4,11 +4,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Arm;
 
-public class cubeLevel2Position extends CommandBase {
+public class cubeLevel2Position extends Command {
   /** Creates a new cubeLevel2Position. */
   public cubeLevel2Position() {
     // Use addRequirements() here to declare subsystem dependencies.

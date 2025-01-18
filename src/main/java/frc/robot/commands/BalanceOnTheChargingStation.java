@@ -6,11 +6,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
 
-public class BalanceOnTheChargingStation extends CommandBase {
+public class BalanceOnTheChargingStation extends Command {
 
   private static final double DRIVE_SPEED = 0.4;
   private static final double REDUCED_DRIVE_SPEED = 0.2;

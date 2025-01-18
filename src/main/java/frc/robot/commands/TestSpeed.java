@@ -4,10 +4,10 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
-public class TestSpeed extends CommandBase {
+public class TestSpeed extends Command {
   private Drivetrain m_drivetrain;
 
   /** Creates a new TestSpeed. */
