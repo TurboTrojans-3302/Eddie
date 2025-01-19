@@ -107,9 +107,6 @@ public class Robot extends TimedRobot {
         }
         m_robotContainer.revDigitBoard.display("auto");
         setAllianceLED();
-        m_robotContainer.m_arm.shoulderForward(true);
-        m_robotContainer.m_arm.extensionOut(false);
-        m_robotContainer.m_arm.clawClosed(true);
     }
 
     /**
@@ -155,10 +152,10 @@ public class Robot extends TimedRobot {
     }
 
     public void setAllianceLED(){
-        if(DriverStation.getAlliance() == DriverStation.Alliance.Blue){
+        if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
             m_robotContainer.m_BlinkinLED.set(REVBlinkinLED.Pattern.SOLID_BLUE);
         }
-        if(DriverStation.getAlliance() == DriverStation.Alliance.Red){
+        if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
             m_robotContainer.m_BlinkinLED.set(REVBlinkinLED.Pattern.SOLID_RED);
         }    
     }
