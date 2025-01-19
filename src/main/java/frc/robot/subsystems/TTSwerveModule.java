@@ -13,6 +13,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import com.swervedrivespecialties.swervelib.ctre.CanCoderAbsoluteConfiguration;
 import com.swervedrivespecialties.swervelib.ctre.CtreUtils;
 import com.revrobotics.*;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -42,19 +48,18 @@ public class TTSwerveModule implements SwerveModule {
 
         double nominalVoltage = mModuleConfiguration.getNominalVoltage();
         double currentLimit = mModuleConfiguration.getDriveCurrentLimit();
+        SparkMaxConfig driveConfig = new SparkMaxConfig();
+        driveConfig.inverted(mechanicalConfiguration.isDriveInverted())
+            .voltageCompensation(nominalVoltage)
+            .smartCurrentLimit((int)currentLimit)
+            .idleMode(IdleMode.kBrake);
     
-        CANSparkMax driveMotor = new CANSparkMax(driveMotorPort, CANSparkMaxLowLevel.MotorType.kBrushless);
-        driveMotor.setInverted(mechanicalConfiguration.isDriveInverted());
+        SparkMax driveMotor = new SparkMax(driveMotorPort, MotorType.kBrushless);
+        driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);            
     
-        checkNeoError(driveMotor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
-    
-        checkNeoError(driveMotor.setSmartCurrentLimit((int) currentLimit), "Failed to set current limit for NEO");
-    
-        checkNeoError(driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
-        checkNeoError(driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
-        checkNeoError(driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
-        // Set neutral mode to brake
-        driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // checkNeoError(driveMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
+        // checkNeoError(driveMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
+        // checkNeoError(driveMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
     
         // Setup encoder
         RelativeEncoder driveEncoder = driveMotor.getEncoder();
@@ -88,11 +93,11 @@ public class TTSwerveModule implements SwerveModule {
         //AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> encoderFactory = new CanCoderFactoryBuilder().withReadingUpdatePeriod(100).build();
         //AbsoluteEncoder absoluteEncoder = encoderFactory.create(encoderconfig);
 
-        CANSparkMax steerMotor = new CANSparkMax(steerConfiguration.getMotorPort(), CANSparkMaxLowLevel.MotorType.kBrushless);
-        checkNeoError(steerMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
-        checkNeoError(steerMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
-        checkNeoError(steerMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
-        checkNeoError(steerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake), "Failed to set NEO idle mode");
+        SparkMax steerMotor = new SparkMax(steerConfiguration.getMotorPort(), SparkMaxLowLevel.MotorType.kBrushless);
+        checkNeoError(steerMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
+        checkNeoError(steerMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
+        checkNeoError(steerMotor.setPeriodicFramePeriod(SparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
+        checkNeoError(steerMotor.setIdleMode(SparkMax.IdleMode.kBrake), "Failed to set NEO idle mode");
         steerMotor.setInverted(!mechanicalConfiguration.isSteerInverted());
             checkNeoError(steerMotor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
             checkNeoError(steerMotor.setSmartCurrentLimit((int) Math.round(currentLimit)), "Failed to set NEO current limits");
@@ -123,10 +128,10 @@ public class TTSwerveModule implements SwerveModule {
     }
 
     private static class DriveControllerImplementation implements DriveController {
-        private final CANSparkMax motor;
+        private final SparkMax motor;
         private final RelativeEncoder encoder;
 
-        private DriveControllerImplementation(CANSparkMax motor, RelativeEncoder encoder) {
+        private DriveControllerImplementation(SparkMax motor, RelativeEncoder encoder) {
             this.motor = motor;
             this.encoder = encoder;
         }
@@ -146,14 +151,14 @@ public class TTSwerveModule implements SwerveModule {
     public static class SteerControllerImplementation implements SteerController {
 
         @SuppressWarnings({"FieldCanBeLocal", "unused"})
-        private final CANSparkMax motor;
+        private final SparkMax motor;
         private final SparkMaxPIDController controller;
         private final RelativeEncoder motorEncoder;
         private final EncoderImplementation absoluteEncoder;
 
         private double referenceAngleRadians = 0;
 
-        public SteerControllerImplementation(CANSparkMax motor, EncoderImplementation absoluteEncoder) {
+        public SteerControllerImplementation(SparkMax motor, EncoderImplementation absoluteEncoder) {
             this.motor = motor;
             this.controller = motor.getPIDController();
             this.motorEncoder = motor.getEncoder();
@@ -192,7 +197,7 @@ public class TTSwerveModule implements SwerveModule {
 
             this.referenceAngleRadians = referenceAngleRadians;
 
-            controller.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
+            controller.setReference(adjustedReferenceAngleRadians, SparkMax.ControlType.kPosition);
         }
 
 
