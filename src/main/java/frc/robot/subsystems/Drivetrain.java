@@ -105,7 +105,7 @@ public class Drivetrain extends SubsystemBase {
     public Drivetrain() {
         m_instance = this;    
 
-        ahrs.calibrate();
+        ahrs.reset();
 
         setDefaultCommand(new TeleOPDrive(this));
 

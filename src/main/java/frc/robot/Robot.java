@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.REVBlinkinLED;
-import edu.wpi.first.cameraserver.CameraServer;
 
 
 /**
@@ -51,9 +50,6 @@ public class Robot extends TimedRobot {
         m_robotContainer = RobotContainer.getInstance();
         HAL.report(tResourceType.kResourceType_Framework, tInstances.kFramework_RobotBuilder);
         m_robotContainer.m_drivetrain.calibrateSterrRelativeEncoder();
-
-        m_robotContainer.revDigitBoard.display("3302");
-        CameraServer.startAutomaticCapture();
     }
 
     /**
@@ -77,13 +73,7 @@ public class Robot extends TimedRobot {
     * This function is called once each time the robot enters Disabled mode.
     */
     @Override
-    public void disabledInit() {
-        if(DriverStation.isEStopped()) {
-            m_robotContainer.revDigitBoard.display("estp");
-        }else{
-            m_robotContainer.revDigitBoard.display("dsbl");
-        }
-    }
+    public void disabledInit() {}
 
     @Override
     public void disabledPeriodic() {
@@ -105,7 +95,6 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
-        m_robotContainer.revDigitBoard.display("auto");
         setAllianceLED();
     }
 
@@ -125,7 +114,6 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        m_robotContainer.revDigitBoard.display("tele");
         setAllianceLED();
     }
 
@@ -140,7 +128,6 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
-        m_robotContainer.revDigitBoard.display("test");
         setAllianceLED();
     }
 

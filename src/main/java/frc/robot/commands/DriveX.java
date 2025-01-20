@@ -10,7 +10,6 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DriveX extends Command {
   private static final double TOLERANCE = 0.100;
-  private static final double DRIVE_SPEED = 0.4;
   Drivetrain m_drivetrain;
   double m_delta;
   double m_speed;

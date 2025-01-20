@@ -47,11 +47,9 @@ public class DriveTo extends Command {
 
     double current_speed = m_drivetrain.getVelocityVector().getNorm();
 
-    final TrapezoidProfile profile = new TrapezoidProfile(m_constraints,
-                                                          new State(m_distance, 0),
-                                                          new State(0, current_speed));
-
-    double speed = profile.calculate(0.026).velocity;
+    final TrapezoidProfile profile = new TrapezoidProfile(m_constraints);
+                                                          
+    double speed = profile.calculate(0.026, new State(m_distance, 0),new State(0, current_speed)).velocity;
     m_drivetrain.drive(new Translation2d(speed, direction), 0, true);
   }
 

@@ -48,7 +48,6 @@ public class RobotContainer {
   // Joysticks
   private final XboxController driveController = new XboxController(0);
 
-  public REVDigitBoard revDigitBoard = new REVDigitBoard();
   public REVBlinkinLED m_BlinkinLED = new REVBlinkinLED(RobotMap.BLINKIN_LED_PWM_CHANNEL);
 
   

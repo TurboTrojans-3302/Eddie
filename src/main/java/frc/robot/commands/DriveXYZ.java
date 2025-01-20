@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class DriveXYZ extends ProfiledPIDCommand {
   /** Creates a new DriveXYZ. */
+  @SuppressWarnings("deprecation")
   public DriveXYZ() {
     super(
         // The ProfiledPIDController used by the command

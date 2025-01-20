@@ -24,15 +24,12 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
 
-import org.opencv.features2d.MSER;
-
-
+@SuppressWarnings("deprecation")
 public class TTSwerveModule implements SwerveModule {
 
     private SteerControllerImplementation mSteerController;
