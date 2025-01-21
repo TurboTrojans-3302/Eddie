@@ -45,6 +45,11 @@ public class Drivetrain extends SubsystemBase {
     private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(341.6);
     private static final double kPgain = 0.080;
     private static final double kDgain = 0;
+    public double FLcommandedAngle;
+    public double BLcommandedAngle;
+    public double BRcommandedAngle;
+    public double FRcommandedAngle;
+    
 
     private static Drivetrain m_instance;
 
@@ -148,7 +153,13 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Front Left Module Angle", Math.toDegrees(frontLeftModule.getSteerAngle()));
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getSteerAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getSteerAngle()));
-        SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));
+        SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getSteerAngle()));                 
+        SmartDashboard.putNumber("Front Left Commanded Angle", FLcommandedAngle);
+     SmartDashboard.putNumber("Front Right Commanded Angle", FRcommandedAngle);
+    SmartDashboard.putNumber("Back Left Commanded Angle", BLcommandedAngle);
+       SmartDashboard.putNumber("Back Right Commanded Angle", BRcommandedAngle);            
+        
+
 
         // SmartDashboard.putNumber("Gyroscope Angle", ahrs.getYaw());
         // SmartDashboard.putNumber("Gyroscope Pitch", ahrs.getPitch());
@@ -196,10 +207,14 @@ public class Drivetrain extends SubsystemBase {
         backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
         //TODO we'd really like to set the velocity in m/s
 
-     //SmartDashboard.putNumber("Front Left Commanded Angle", states[0].angle.getDegrees());
-       // SmartDashboard.putNumber("Front Right Commanded Angle", states[1].angle.getDegrees());
-        //SmartDashboard.putNumber("Back Left Commanded Angle", states[2].angle.getDegrees());
-       // SmartDashboard.putNumber("Back Right Commanded Angle", states[3].angle.getDegrees());
+        
+
+       FLcommandedAngle = states[0].angle.getDegrees();
+       FRcommandedAngle = states[1].angle.getDegrees();
+       BLcommandedAngle = states[2].angle.getDegrees();
+       BRcommandedAngle = states[3].angle.getDegrees();
+
+     
     }
     
     public void setAll(double speed, double angleRadians) {
