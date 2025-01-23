@@ -20,7 +20,20 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public class Constants {
-   /**
+   
+  public static final class CameraConstants{
+    public static final double HcameraFOV = 50.0;
+    public static final double VcameraFOV = 53.58;
+    public static final int resolutionH = 640;
+    public static final int resolutionV = 480;
+    public static final double cameraHeight = 36.0; //in
+    public static final double aprilTagHeight = 12.0; //in
+    public static final double cameraAngle = 0.0;
+  }
+  
+  
+  
+  /**
     * public static final class DriveConstants {
     *   public static final int kLeftMotor1Port = 0;
     *   public static final int kLeftMotor2Port = 1;
@@ -29,4 +42,6 @@ public class Constants {
     * }
     */ 
 }
+
+
 

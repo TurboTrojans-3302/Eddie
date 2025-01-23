@@ -44,7 +44,9 @@ public class RobotContainer {
 
   // The robot's subsystems
   public final Drivetrain m_drivetrain = new Drivetrain();
-
+  
+  public final AprilTagFinder m_apriltagfinder = new AprilTagFinder();
+  
   // Joysticks
   private final XboxController driveController = new XboxController(0);
 
