@@ -94,27 +94,33 @@ public class TTSwerveModule implements SwerveModule {
         double steerPositionConversionFactor = 2.0 * Math.PI * mechanicalConfiguration.getSteerReduction();
         steerEncoderConfig.positionConversionFactor(steerPositionConversionFactor);
         steerEncoderConfig.velocityConversionFactor(steerPositionConversionFactor / 60.0);
+
+        final double pidProportional = 1.0;
+        final double pidIntegral = 0.0;
+        final double pidDerivative = 0.1;
+
+        ClosedLoopConfig steerPIDConfig = new ClosedLoopConfig();
+        steerPIDConfig.p(pidProportional)
+            .i(pidIntegral)
+            .d(pidDerivative)
+            .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
+
         SparkMaxConfig steerConfig = new SparkMaxConfig();
         steerConfig.inverted(!mechanicalConfiguration.isSteerInverted())
             .voltageCompensation(nominalVoltage)
             .smartCurrentLimit((int)currentLimit)
             .idleMode(IdleMode.kBrake)
-            .apply(steerEncoderConfig);
+            .apply(steerEncoderConfig)
+            .apply(steerPIDConfig);
+
         SparkMax steerMotor = new SparkMax(steerConfiguration.getMotorPort(), MotorType.kBrushless);
         steerMotor.configure(steerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         RelativeEncoder integratedEncoder = steerMotor.getEncoder();
         checkNeoError(integratedEncoder.setPosition(absoluteEncoder.getAbsoluteAngle()), "Failed to set NEO encoder position");
 
-        final double pidProportional = 1.0;
-        final double pidIntegral = 0.0;
-        final double pidDerivative = 0.1;
         
-        ClosedLoopConfig steerPIDConfig = new ClosedLoopConfig();
-        steerPIDConfig.p(pidProportional)
-            .i(pidIntegral)
-            .d(pidDerivative)
-            .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder);
+        
 
         mSteerController = new SteerControllerImplementation(steerMotor, absoluteEncoder);
     }            
