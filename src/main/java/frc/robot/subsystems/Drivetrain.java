@@ -183,7 +183,7 @@ public class Drivetrain extends SubsystemBase {
 		double angle_error = angleDeltaDeg(heading, angle);
 		double yawCommand = - angle_error * kPgain - (currentAngularRate) * kDgain;
 
-        drive(translation, yawCommand, true);
+        drive(translation, yawCommand, false);
     }
 
 

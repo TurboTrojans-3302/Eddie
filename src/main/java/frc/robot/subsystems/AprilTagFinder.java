@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagPoseEstimator;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -44,7 +45,7 @@ public class AprilTagFinder extends SubsystemBase {
   private double cameraAngle;
   //private double percentageErrorFromStraight = 0.0;
  
-  public boolean isTargetFound() {
+  public synchronized boolean isTargetFound() {
     return targetFound;
   }
 
@@ -76,6 +77,11 @@ public class AprilTagFinder extends SubsystemBase {
     cameraAngle = Constants.CameraConstants.cameraAngle;
   }
 
+  public AprilTagFinder(int defaultTarget){
+    super();
+    setTarget(defaultTarget);
+  }
+
   public synchronized void setTarget(int target){
     this.target = target;
   }
@@ -85,14 +91,14 @@ public class AprilTagFinder extends SubsystemBase {
   }
 
   public synchronized double getAngleToTarget(){
-    if (targetFound){
+    //if (targetFound){
     // (assumes camera is level with apriltag) percentageErrorFromStraight = ((targetDetected.getCenterX() - targetDetected.getCornerX(1)) - (targetDetected.getCenterY() - targetDetected.getCornerY(1))) / (targetDetected.getCenterY() - targetDetected.getCornerY(1));
     angleToTarget = ((targetDetected.getCenterX() / resolutionH) * HcameraFOV) - (HcameraFOV / 2);
     return angleToTarget;
-    }
+   /*  }
     else{
-      return 0.0;
-    }
+      return 0.0; 
+    } */
   }
 
   public synchronized double getDistanceToTarget(){
@@ -129,7 +135,7 @@ void apriltagVisionThreadProc() {
   // Get a CvSink. This will capture Mats from the camera
   CvSink cvSink = CameraServer.getVideo();
   // Setup a CvSource. This will send images back to the Dashboard
-  //CvSource outputStream = CameraServer.putVideo("Detected", 1280, 720);
+  CvSource outputStream = CameraServer.putVideo("Detected", 1280, 720);
 
   // Mats are very memory expensive. Lets reuse these.
   var mat = new Mat();
@@ -155,7 +161,7 @@ void apriltagVisionThreadProc() {
     // in the source mat.  If there is an error notify the output.
     if (cvSink.grabFrame(mat) == 0) {
       // Send the output the error.
-      //outputStream.notifyError(cvSink.getError());
+      outputStream.notifyError(cvSink.getError());
       // skip the rest of the current iteration
       continue;
     }
@@ -175,8 +181,9 @@ void apriltagVisionThreadProc() {
       tags.add((long) detection.getId());
 
       if (detection.getId() == target) {
-        targetFound = true;
-        targetDetected = detection;
+        setTargetFound(true);
+        setTargetDetected(detection);
+        System.out.println("Found an AprilTAG!!!!!!!!!!!!!!!!");
       }
 
 
@@ -221,12 +228,12 @@ void apriltagVisionThreadProc() {
 
     // put list of tags onto dashboard
     pubTags.set(tags.stream().mapToLong(Long::longValue).toArray());
-    pubFoundFlag.set(targetFound);
+    pubFoundFlag.set(isTargetFound());
     pubAngle.set(getAngleToTarget());
     pubDistance.set(getDistanceToTarget());
 
     // Give the output stream a new image to display
-    //outputStream.putFrame(mat);
+    outputStream.putFrame(mat);
   }
 
   pubTags.close();
