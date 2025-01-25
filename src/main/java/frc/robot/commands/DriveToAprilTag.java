@@ -9,6 +9,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -39,7 +42,7 @@ public class DriveToAprilTag extends Command {
   @Override
   public void execute() {
 
-    Translation2d forward = new Translation2d(0.5, 0);
+    Translation2d forward = new Translation2d(0.2, 0);
     Double heading = m_drive.getAngleDeg();
 
     if(m_finder.isTargetFound()) {
@@ -47,6 +50,10 @@ public class DriveToAprilTag extends Command {
     }
 
     m_drive.driveHeading(forward, heading);
+
+    SmartDashboard.getNumber("Heading", heading);
+    SmartDashboard.getNumber("Target Angle", m_finder.getAngleToTarget());
+    SmartDashboard.getBoolean("Target Found", m_finder.isTargetFound());
   }
   
 

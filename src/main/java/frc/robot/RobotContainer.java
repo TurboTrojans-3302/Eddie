@@ -70,6 +70,7 @@ public class RobotContainer {
     SmartDashboard.putData("DriveTo(1,0)", new DriveTo(1, 0));
     SmartDashboard.putData("DriveTo(1,1)", new DriveTo(1, 1));
     SmartDashboard.putData("Square Up", new SquareUp(m_drivetrain));
+    SmartDashboard.putData("Drive to April Tag", new DriveToAprilTag(m_drivetrain,2, m_apriltagfinder));
     //SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
     //SmartDashboard.putData("TeleOPDrive", new TeleOPDrive( m_drivetrain, m_arm ));
     //SmartDashboard.putData("TestSpeed", new TestSpeed(m_drivetrain));
