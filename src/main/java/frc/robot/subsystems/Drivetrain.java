@@ -39,10 +39,10 @@ public class Drivetrain extends SubsystemBase {
     public static final double MAX_SPEED = 5.0; // m/s 
     public static final Pose2d defaultStartPosition = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
 
-    private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(209.787);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.43);
-    private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(303.485);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(342.33);
+    private static final double FRONT_LEFT_ANGLE_OFFSET = Math.toRadians(209.787-180.0);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = Math.toRadians(151.43 );
+    private static final double BACK_LEFT_ANGLE_OFFSET = Math.toRadians(303.485 - 180.0);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = Math.toRadians(342.33 );
     private static final double kPgain = 0.080;
     private static final double kDgain = 0;
     public double FLcommandedAngle;
@@ -193,10 +193,10 @@ public class Drivetrain extends SubsystemBase {
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
         ChassisSpeeds speeds;
         if (fieldOriented) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), -translation.getY(), rotation,
                     Rotation2d.fromDegrees(ahrs.getAngle()));
         } else {
-            speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+            speeds = new ChassisSpeeds(translation.getX(), -translation.getY(), rotation);
         }
 
 

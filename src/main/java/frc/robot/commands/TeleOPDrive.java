@@ -71,7 +71,7 @@ public class TeleOPDrive extends Command {
         //Figure out what the controller value is
         XboxController driveController = RobotContainer.getInstance().getDriveController();
         double forward = -driveController.getLeftY();
-        double leftward = driveController.getLeftX();
+        double leftward = -driveController.getLeftX();
         double turn = -driveController.getRightX();
 
         forward = MathUtil.applyDeadband(forward, DRIVE_DEADBAND);
@@ -90,7 +90,12 @@ public class TeleOPDrive extends Command {
         //Send it to the drivetrain
         if(driveController.getBButton()){
             m_drivetrain.stop();
+        }else if(driveController.getYButton()){
+            m_drivetrain.drive(new Translation2d(0.2, 0), 0, false);
+        }else if(driveController.getXButton()){
+            m_drivetrain.drive(new Translation2d(0.0, 0.2), 0, false);
         }else{
+
             m_drivetrain.drive(translation, rotation, field_oriented);
         }
 
